@@ -14,7 +14,7 @@ GPIO.setup(DIR0, GPIO.IN)   # Input pin to change direction
 GPIO.setup(DIR1, GPIO.IN)   # Input pin to change direction
 
 # Initialize PWM on STEP pin with a frequency of 100 Hz
-pwm = GPIO.PWM(STEP, 100)  # 100 Hz frequency
+pwm = GPIO.PWM(STEP, 400)  # 100 Hz frequency
 pwm.start(50)  # Start PWM with a 50% duty cycle
 
 # Set initial direction
