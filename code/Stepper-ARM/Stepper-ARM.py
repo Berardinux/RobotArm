@@ -32,11 +32,11 @@ try:
         # Check if either pin DIR0 or DIR1 goes high
         if GPIO.input(DIR0) == GPIO.HIGH:
             print("GPIO DIR0 went HIGH")
-            GPIO.output(DIR, GPIO.LOW)  # Switch direction
+            GPIO.output(DIR, GPIO.HIGH)  # Switch direction
             sleep(0.5)  # Small delay to debounce the input
         elif GPIO.input(DIR1) == GPIO.HIGH:
             print("GPIO DIR1 went HIGH")
-            GPIO.output(DIR, GPIO.HIGH)  # Switch direction
+            GPIO.output(DIR, GPIO.LOW)  # Switch direction
             sleep(0.5)  # Small delay to debounce the input
 
         sleep(0.1)  # Short delay before next loop iteration
