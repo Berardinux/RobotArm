@@ -7,7 +7,7 @@ isControllerConnected=$(ls /dev/input | grep event4)
 if [ -n "$isControllerConnected" ]; then
   echo "Command produced isControllerConnected: $isControllerConnected"
   #/usr/bin/python3 /home/berardinux/Documents/Blackbriar/src/servoXbox.py &
-  /usr/bin/python3 /home/berardinux/RobotArm/code/Stepper-ARM/Controller/src/StepperController.py &
+  /usr/bin/python3 /home/berardinux/RobotArm/code/Python/Controller/src/StepperController.py &
   while [ -n "$isControllerConnected" ]; do
     isControllerConnected=$(ls /dev/input | grep event4)
     echo "The Xbox Controller is still connected"
