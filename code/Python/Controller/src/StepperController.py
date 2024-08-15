@@ -18,7 +18,7 @@ GPIO.setup(DIR0, GPIO.IN)
 GPIO.setup(DIR1, GPIO.IN)
 
 # Initialize PWM on STEP pin with a frequency of 1000 Hz
-pwm = GPIO.PWM(STEP, 600)  # 1000 Hz frequency
+pwm = GPIO.PWM(STEP, 500)  # 1000 Hz frequency
 pwm.start(0)  # Start PWM with a 0% duty cycle (motor stopped)
 
 # Set initial direction
