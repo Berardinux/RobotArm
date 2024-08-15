@@ -57,7 +57,7 @@ try:
                 if absevent.event.value == LEFT:  # D-pad left
                     if GPIO.input(DIR1) == GPIO.HIGH:
                         limitSwitch()
-                    else
+                    else:
                         print("D-pad left pressed")
                         GPIO.output(DIR, GPIO.LOW)  # Set direction to LOW
                         pwm.ChangeDutyCycle(50)  # Start motor
@@ -65,7 +65,7 @@ try:
                 elif absevent.event.value == RIGHT:  # D-pad right
                     if GPIO.input(DIR1) == GPIO.HIGH:
                         limitSwitch()
-                    else
+                    else:
                         print("D-pad right pressed")
                         GPIO.output(DIR, GPIO.HIGH)  # Set direction to HIGH
                         pwm.ChangeDutyCycle(50)  # Start motor
