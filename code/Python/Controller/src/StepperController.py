@@ -18,7 +18,7 @@ GPIO.setup(DIR0, GPIO.IN)
 GPIO.setup(DIR1, GPIO.IN)
 
 # Initialize PWM on STEP pin with a frequency of 1000 Hz
-pwm = GPIO.PWM(STEP, 500)  # 1000 Hz frequency
+pwm = GPIO.PWM(STEP, 1000)  # 1000 Hz frequency
 pwm.start(0)  # Start PWM with a 0% duty cycle (motor stopped)
 
 # Set initial direction
@@ -35,7 +35,7 @@ def limitSwitch():
         while GPIO.input(DIR0) == GPIO.HIGH:
             print("Edge or Rail")
             GPIO.output(DIR, GPIO.HIGH)
-            pwm.ChangeDutyCycle(100)
+            pwm.ChangeDutyCycle(50)
 #            while absevent.event.value == RIGHT and GPIO.input(DIR0) == GPIO.LOW:
 #                pwm.ChangeDutyCycle(0)
     elif GPIO.input(DIR1) == GPIO.HIGH:
@@ -43,7 +43,7 @@ def limitSwitch():
         while GPIO.input(DIR1) == GPIO.HIGH:
             print("Edge or Rail")
             GPIO.output(DIR, GPIO.LOW)
-            pwm.ChangeDutyCycle(100)
+            pwm.ChangeDutyCycle(50)
 #           while absevent.event.value == LEFT and GPIO.input(DIR1) == GPIO.LOW:
 #                pwm.ChangeDutyCycle(0)
 
@@ -54,16 +54,15 @@ try:
             absevent = categorize(event)
             if absevent.event.code == ecodes.ABS_HAT0X:
                 # Check if limit switches are triggered
-
                 if absevent.event.value == LEFT:  # D-pad left
                     print("D-pad left pressed")
                     GPIO.output(DIR, GPIO.LOW)  # Set direction to LOW
-                    pwm.ChangeDutyCycle(100)  # Start motor
+                    pwm.ChangeDutyCycle(50)  # Start motor
                     moving = True
                 elif absevent.event.value == RIGHT:  # D-pad right
                     print("D-pad right pressed")
                     GPIO.output(DIR, GPIO.HIGH)  # Set direction to HIGH
-                    pwm.ChangeDutyCycle(100)  # Start motor
+                    pwm.ChangeDutyCycle(50)  # Start motor
                     moving = True
                 elif absevent.event.value == 0:  # D-pad released (centered)
                     if moving:
