@@ -57,13 +57,13 @@ try:
             absevent = categorize(event)
             if absevent.event.code == ecodes.ABS_HAT0X:
                 if absevent.event.value == LEFT:  # D-pad left
-                    if GPIO.input(DIR1) == GPIO.LOW:  # Allow movement only if the switch is not active
+                    while GPIO.input(DIR1) == GPIO.LOW and absevent.event.value == LEFT:  # Allow movement only if the switch is not active
                         print("D-pad left pressed")
                         GPIO.output(DIR, GPIO.LOW)  # Set direction to LOW
                         pwm.ChangeDutyCycle(50)  # Start motor
                         moving = True
                 elif absevent.event.value == RIGHT:  # D-pad right
-                    if GPIO.input(DIR0) == GPIO.LOW:  # Allow movement only if the switch is not active
+                    while GPIO.input(DIR0) == GPIO.LOW and absevent.event.value == RIGHT:  # Allow movement only if the switch is not active
                         print("D-pad right pressed")
                         GPIO.output(DIR, GPIO.HIGH)  # Set direction to HIGH
                         pwm.ChangeDutyCycle(50)  # Start motor
