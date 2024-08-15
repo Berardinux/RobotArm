@@ -7,6 +7,8 @@ DIR = 14
 STEP = 15
 DIR0 = 18
 DIR1 = 23
+LEFT = -1
+RIGHT = 1
 
 # Setup GPIO
 GPIO.setmode(GPIO.BCM)  # Use GPIO numbers
@@ -27,6 +29,24 @@ gamepad = InputDevice('/dev/input/event4')  # Change to your specific event file
 
 moving = False  # Track whether the motor should be moving
 
+def limitSwitch():
+    if GPIO.input(DIR0) == GPIO.HIGH:
+        print("Limit switch DIR0 triggered")
+        while GPIO.input(DIR0) == GPIO.HIGH:
+            print("Edge or Rail")
+            GPIO.output(DIR, GPIO.HIGH)
+            pwm.ChangeDutyCycle(100)
+#            while absevent.event.value == RIGHT and GPIO.input(DIR0) == GPIO.LOW:
+#                pwm.ChangeDutyCycle(0)
+    elif GPIO.input(DIR1) == GPIO.HIGH:
+        print("Limit switch DIR1 triggered")
+        while GPIO.input(DIR1) == GPIO.HIGH:
+            print("Edge or Rail")
+            GPIO.output(DIR, GPIO.LOW)
+            pwm.ChangeDutyCycle(100)
+#           while absevent.event.value == LEFT and GPIO.input(DIR1) == GPIO.LOW:
+#                pwm.ChangeDutyCycle(0)
+
 try:
     for event in gamepad.read_loop():
         # Check if either edge limit switch is triggered
@@ -34,31 +54,16 @@ try:
             absevent = categorize(event)
             if absevent.event.code == ecodes.ABS_HAT0X:
                 # Check if limit switches are triggered
-                if GPIO.input(DIR0) == GPIO.HIGH:
-                    print("Limit switch DIR0 triggered")
-                    while GPIO.input(DIR0) == GPIO.HIGH:
-                        print("Edge or Rail")
-                        GPIO.output(DIR, GPIO.HIGH)
-                        pwm.ChangeDutyCycle(50)
-#                        while absevent.event.value == 1 and GPIO.input(DIR0) == GPIO.LOW:
-#                            pwm.ChangeDutyCycle(0)
-                elif GPIO.input(DIR1) == GPIO.HIGH:
-                    print("Limit switch DIR1 triggered")
-                    while GPIO.input(DIR1) == GPIO.HIGH:
-                        print("Edge or Rail")
-                        GPIO.output(DIR, GPIO.LOW)
-                        pwm.ChangeDutyCycle(50)
-#                        while absevent.event.value == -1 and GPIO.input(DIR1) == GPIO.LOW:
-#                            pwm.ChangeDutyCycle(0)
-                elif absevent.event.value == -1:  # D-pad left
+
+                if absevent.event.value == LEFT:  # D-pad left
                     print("D-pad left pressed")
                     GPIO.output(DIR, GPIO.LOW)  # Set direction to LOW
-                    pwm.ChangeDutyCycle(50)  # Start motor
+                    pwm.ChangeDutyCycle(100)  # Start motor
                     moving = True
-                elif absevent.event.value == 1:  # D-pad right
+                elif absevent.event.value == RIGHT:  # D-pad right
                     print("D-pad right pressed")
                     GPIO.output(DIR, GPIO.HIGH)  # Set direction to HIGH
-                    pwm.ChangeDutyCycle(50)  # Start motor
+                    pwm.ChangeDutyCycle(100)  # Start motor
                     moving = True
                 elif absevent.event.value == 0:  # D-pad released (centered)
                     if moving:
