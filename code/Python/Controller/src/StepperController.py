@@ -29,43 +29,41 @@ gamepad = InputDevice('/dev/input/event4')  # Change to your specific event file
 
 moving = False  # Track whether the motor should be moving
 
-def limitSwitch():
+def handle_limit_switch():
     if GPIO.input(DIR0) == GPIO.HIGH:
         print("Limit switch DIR0 triggered")
+        GPIO.output(DIR, GPIO.LOW)  # Reverse direction to move away from the switch
+        pwm.ChangeDutyCycle(50)  # Move away from the switch
         while GPIO.input(DIR0) == GPIO.HIGH:
-            print("Edge or Rail")
-            GPIO.output(DIR, GPIO.HIGH)
-            pwm.ChangeDutyCycle(50)
-#            while absevent.event.value == RIGHT and GPIO.input(DIR0) == GPIO.LOW:
-#                pwm.ChangeDutyCycle(0)
+            sleep(0.01)  # Continue moving until the limit switch is deactivated
+        pwm.ChangeDutyCycle(0)  # Stop motor when limit switch is deactivated
+
     elif GPIO.input(DIR1) == GPIO.HIGH:
         print("Limit switch DIR1 triggered")
+        GPIO.output(DIR, GPIO.HIGH)  # Reverse direction to move away from the switch
+        pwm.ChangeDutyCycle(50)  # Move away from the switch
         while GPIO.input(DIR1) == GPIO.HIGH:
-            print("Edge or Rail")
-            GPIO.output(DIR, GPIO.LOW)
-            pwm.ChangeDutyCycle(50)
-#           while absevent.event.value == LEFT and GPIO.input(DIR1) == GPIO.LOW:
-#                pwm.ChangeDutyCycle(0)
+            sleep(0.01)  # Continue moving until the limit switch is deactivated
+        pwm.ChangeDutyCycle(0)  # Stop motor when limit switch is deactivated
 
 try:
     for event in gamepad.read_loop():
         # Check if either edge limit switch is triggered
+        if GPIO.input(DIR0) == GPIO.HIGH or GPIO.input(DIR1) == GPIO.HIGH:
+            handle_limit_switch()  # Handle limit switch event first
+            continue  # Skip controller input if limit switch is active
+
         if event.type == ecodes.EV_ABS:
             absevent = categorize(event)
             if absevent.event.code == ecodes.ABS_HAT0X:
-                # Check if limit switches are triggered
                 if absevent.event.value == LEFT:  # D-pad left
-                    if GPIO.input(DIR1) == GPIO.HIGH:
-                        limitSwitch()
-                    else:
+                    if GPIO.input(DIR1) == GPIO.LOW:  # Allow movement only if the switch is not active
                         print("D-pad left pressed")
                         GPIO.output(DIR, GPIO.LOW)  # Set direction to LOW
                         pwm.ChangeDutyCycle(50)  # Start motor
                         moving = True
                 elif absevent.event.value == RIGHT:  # D-pad right
-                    if GPIO.input(DIR0) == GPIO.HIGH:
-                        limitSwitch()
-                    else:
+                    if GPIO.input(DIR0) == GPIO.LOW:  # Allow movement only if the switch is not active
                         print("D-pad right pressed")
                         GPIO.output(DIR, GPIO.HIGH)  # Set direction to HIGH
                         pwm.ChangeDutyCycle(50)  # Start motor
