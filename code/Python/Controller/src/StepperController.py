@@ -56,12 +56,12 @@ try:
         if event.type == ecodes.EV_ABS:
             absevent = categorize(event)
             if absevent.event.code == ecodes.ABS_HAT0X:
-                while absevent.event.value == LEFT and GPIO.input(DIR1) == GPIO.LOW:  # D-pad left
+                while absevent.event.value == LEFT and GPIO.input(DIR0) == GPIO.LOW:  # D-pad left
                     print("D-pad left pressed")
                     GPIO.output(DIR, GPIO.LOW)  # Set direction to LOW
                     pwm.ChangeDutyCycle(50)  # Start motor
                     moving = True
-                while absevent.event.value == RIGHT and GPIO.input(DIR0) == GPIO.LOW:  # D-pad right
+                while absevent.event.value == RIGHT and GPIO.input(DIR1) == GPIO.LOW:  # D-pad right
                     print("D-pad right pressed")
                     GPIO.output(DIR, GPIO.HIGH)  # Set direction to HIGH
                     pwm.ChangeDutyCycle(50)  # Start motor
