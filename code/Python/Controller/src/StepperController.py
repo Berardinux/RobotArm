@@ -55,15 +55,21 @@ try:
             if absevent.event.code == ecodes.ABS_HAT0X:
                 # Check if limit switches are triggered
                 if absevent.event.value == LEFT:  # D-pad left
-                    print("D-pad left pressed")
-                    GPIO.output(DIR, GPIO.LOW)  # Set direction to LOW
-                    pwm.ChangeDutyCycle(50)  # Start motor
-                    moving = True
+                    if GPIO.input(DIR1) == GPIO.HIGH:
+                        limitSwitch()
+                    else
+                        print("D-pad left pressed")
+                        GPIO.output(DIR, GPIO.LOW)  # Set direction to LOW
+                        pwm.ChangeDutyCycle(50)  # Start motor
+                        moving = True
                 elif absevent.event.value == RIGHT:  # D-pad right
-                    print("D-pad right pressed")
-                    GPIO.output(DIR, GPIO.HIGH)  # Set direction to HIGH
-                    pwm.ChangeDutyCycle(50)  # Start motor
-                    moving = True
+                    if GPIO.input(DIR1) == GPIO.HIGH:
+                        limitSwitch()
+                    else
+                        print("D-pad right pressed")
+                        GPIO.output(DIR, GPIO.HIGH)  # Set direction to HIGH
+                        pwm.ChangeDutyCycle(50)  # Start motor
+                        moving = True
                 elif absevent.event.value == 0:  # D-pad released (centered)
                     if moving:
                         print("D-pad released")
