@@ -30,7 +30,6 @@ gamepad = InputDevice('/dev/input/event4')  # Change to your specific event file
 moving = False  # Track whether the motor should be moving
 
 def handle_limit_switch():
-    # Check and handle DIR0 limit switch
     if GPIO.input(DIR0) == GPIO.HIGH:
         print("Limit switch DIR0 triggered")
         GPIO.output(DIR, GPIO.HIGH)  # Reverse direction to move away from the switch
@@ -39,7 +38,6 @@ def handle_limit_switch():
             sleep(0.01)  # Continue moving until the limit switch is deactivated
         pwm.ChangeDutyCycle(0)  # Stop motor when limit switch is deactivated
 
-    # Check and handle DIR1 limit switch
     elif GPIO.input(DIR1) == GPIO.HIGH:
         print("Limit switch DIR1 triggered")
         GPIO.output(DIR, GPIO.LOW)  # Reverse direction to move away from the switch
@@ -49,34 +47,32 @@ def handle_limit_switch():
         pwm.ChangeDutyCycle(0)  # Stop motor when limit switch is deactivated
 
 try:
-    while True:
+   while True:
         # Continuously check if limit switches are triggered
         if GPIO.input(DIR0) == GPIO.HIGH or GPIO.input(DIR1) == GPIO.HIGH:
             handle_limit_switch()  # Handle limit switch event first
             continue  # Skip further input processing if limit switch is active
-
-        # Read gamepad input
-        for event in gamepad.read_loop():
-            if event.type == ecodes.EV_ABS:
-                absevent = categorize(event)
-                if absevent.event.code == ecodes.ABS_HAT0X:
-                    if absevent.event.value == LEFT:  # D-pad left
-                        if GPIO.input(DIR1) == GPIO.LOW:  # Allow movement only if the switch is not active
-                            print("D-pad left pressed")
-                            GPIO.output(DIR, GPIO.LOW)  # Set direction to LOW
-                            pwm.ChangeDutyCycle(50)  # Start motor
-                            moving = True
-                    elif absevent.event.value == RIGHT:  # D-pad right
-                        if GPIO.input(DIR0) == GPIO.LOW:  # Allow movement only if the switch is not active
-                            print("D-pad right pressed")
-                            GPIO.output(DIR, GPIO.HIGH)  # Set direction to HIGH
-                            pwm.ChangeDutyCycle(50)  # Start motor
-                            moving = True
-                    elif absevent.event.value == 0:  # D-pad released (centered)
-                        if moving:
-                            print("D-pad released")
-                            pwm.ChangeDutyCycle(0)  # Stop motor
-                            moving = False
+    for event in gamepad.read_loop():
+        if event.type == ecodes.EV_ABS:
+            absevent = categorize(event)
+            if absevent.event.code == ecodes.ABS_HAT0X:
+                if absevent.event.value == LEFT:  # D-pad left
+                    if GPIO.input(DIR1) == GPIO.LOW:  # Allow movement only if the switch is not active
+                        print("D-pad left pressed")
+                        GPIO.output(DIR, GPIO.LOW)  # Set direction to LOW
+                        pwm.ChangeDutyCycle(50)  # Start motor
+                        moving = True
+                elif absevent.event.value == RIGHT:  # D-pad right
+                    if GPIO.input(DIR0) == GPIO.LOW:  # Allow movement only if the switch is not active
+                        print("D-pad right pressed")
+                        GPIO.output(DIR, GPIO.HIGH)  # Set direction to HIGH
+                        pwm.ChangeDutyCycle(50)  # Start motor
+                        moving = True
+                elif absevent.event.value == 0:  # D-pad released (centered)
+                    if moving:
+                        print("D-pad released")
+                        pwm.ChangeDutyCycle(0)  # Stop motor
+                        moving = False
 
         sleep(0.01)  # Short delay before the next loop iteration
 
