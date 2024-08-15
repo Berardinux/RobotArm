@@ -32,7 +32,7 @@ moving = False  # Track whether the motor should be moving
 def handle_limit_switch():
     if GPIO.input(DIR0) == GPIO.HIGH:
         print("Limit switch DIR0 triggered")
-        GPIO.output(DIR, GPIO.LOW)  # Reverse direction to move away from the switch
+        GPIO.output(DIR, GPIO.HIGH)  # Reverse direction to move away from the switch
         pwm.ChangeDutyCycle(50)  # Move away from the switch
         while GPIO.input(DIR0) == GPIO.HIGH:
             sleep(0.01)  # Continue moving until the limit switch is deactivated
@@ -40,7 +40,7 @@ def handle_limit_switch():
 
     elif GPIO.input(DIR1) == GPIO.HIGH:
         print("Limit switch DIR1 triggered")
-        GPIO.output(DIR, GPIO.HIGH)  # Reverse direction to move away from the switch
+        GPIO.output(DIR, GPIO.LOW)  # Reverse direction to move away from the switch
         pwm.ChangeDutyCycle(50)  # Move away from the switch
         while GPIO.input(DIR1) == GPIO.HIGH:
             sleep(0.01)  # Continue moving until the limit switch is deactivated
