@@ -40,16 +40,16 @@ try:
                         print("Edge or Rail")
                         GPIO.output(DIR, GPIO.HIGH)
                         pwm.ChangeDutyCycle(50)
-                        while absevent.event.value == 1 and GPIO.input(DIR0) == GPIO.LOW:
-                            pwm.ChangeDutyCycle(0)
+#                        while absevent.event.value == 1 and GPIO.input(DIR0) == GPIO.LOW:
+#                            pwm.ChangeDutyCycle(0)
                 elif GPIO.input(DIR1) == GPIO.HIGH:
                     print("Limit switch DIR1 triggered")
                     while GPIO.input(DIR1) == GPIO.HIGH:
                         print("Edge or Rail")
                         GPIO.output(DIR, GPIO.LOW)
                         pwm.ChangeDutyCycle(50)
-                        while absevent.event.value == -1 and GPIO.input(DIR1) == GPIO.LOW:
-                            pwm.ChangeDutyCycle(0)
+#                        while absevent.event.value == -1 and GPIO.input(DIR1) == GPIO.LOW:
+#                            pwm.ChangeDutyCycle(0)
                 elif absevent.event.value == -1:  # D-pad left
                     print("D-pad left pressed")
                     GPIO.output(DIR, GPIO.LOW)  # Set direction to LOW
