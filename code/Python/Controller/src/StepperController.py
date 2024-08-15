@@ -5,11 +5,15 @@ from evdev import InputDevice, categorize, ecodes
 # Initialize GPIO
 DIR = 14
 STEP = 15
+DIR0 = 18
+DIR1 = 23
 
 # Setup GPIO
 GPIO.setmode(GPIO.BCM)  # Use GPIO numbers
 GPIO.setup(DIR, GPIO.OUT)  # Direction pin
 GPIO.setup(STEP, GPIO.OUT)  # Step pin (PWM)
+GPIO.setup(DIR0, GPIO.IN)
+GPIO.setup(DIR1, GPIO.IN)
 
 # Initialize PWM on STEP pin with a frequency of 1000 Hz
 pwm = GPIO.PWM(STEP, 1000)  # 1000 Hz frequency
@@ -25,10 +29,28 @@ moving = False  # Track whether the motor should be moving
 
 try:
     for event in gamepad.read_loop():
+        # Check if either edge limit switch is triggered
         if event.type == ecodes.EV_ABS:
             absevent = categorize(event)
             if absevent.event.code == ecodes.ABS_HAT0X:
-                if absevent.event.value == -1:  # D-pad left
+                # Check if limit switches are triggered
+                if GPIO.input(DIR0) == GPIO.HIGH:
+                    print("Limit switch DIR0 triggered")
+                    while GPIO.input(DIR0) == GPIO.HIGH:
+                        print("Edge or Rail")
+                        GPIO.output(DIR, GPIO.HIGH)
+                        pwm.ChangeDutyCycle(50)
+                        while absevent.event.value == 1 and GPIO.input(DIR0) == GPIO.LOW:
+                            pwm.ChangeDutyCycle(0)
+                elif GPIO.input(DIR1) == GPIO.HIGH:
+                    print("Limit switch DIR1 triggered")
+                    while GPIO.input(DIR1) == GPIO.HIGH:
+                        print("Edge or Rail")
+                        GPIO.output(DIR, GPIO.LOW)
+                        pwm.ChangeDutyCycle(50)
+                        while absevent.event.value == -1 and GPIO.input(DIR1) == GPIO.LOW:
+                            pwm.ChangeDutyCycle(0)
+                elif absevent.event.value == -1:  # D-pad left
                     print("D-pad left pressed")
                     GPIO.output(DIR, GPIO.LOW)  # Set direction to LOW
                     pwm.ChangeDutyCycle(50)  # Start motor
