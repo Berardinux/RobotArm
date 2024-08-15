@@ -47,12 +47,11 @@ def handle_limit_switch():
         pwm.ChangeDutyCycle(0)  # Stop motor when limit switch is deactivated
 
 try:
-    while True:
+    for event in gamepad.read_loop():
         # Continuously check if limit switches are triggered
         if GPIO.input(DIR0) == GPIO.HIGH or GPIO.input(DIR1) == GPIO.HIGH:
             handle_limit_switch()  # Handle limit switch event first
             continue  # Skip further input processing if limit switch is active
-    for event in gamepad.read_loop():
         if event.type == ecodes.EV_ABS:
             absevent = categorize(event)
             if absevent.event.code == ecodes.ABS_HAT0X:
