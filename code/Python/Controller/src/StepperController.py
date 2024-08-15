@@ -47,7 +47,7 @@ def handle_limit_switch():
         pwm.ChangeDutyCycle(0)  # Stop motor when limit switch is deactivated
 
 try:
-   while True:
+    while True:
         # Continuously check if limit switches are triggered
         if GPIO.input(DIR0) == GPIO.HIGH or GPIO.input(DIR1) == GPIO.HIGH:
             handle_limit_switch()  # Handle limit switch event first
