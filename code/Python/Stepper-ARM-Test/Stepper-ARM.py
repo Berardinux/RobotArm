@@ -39,7 +39,7 @@ try:
             GPIO.output(DIR, GPIO.LOW)  # Switch direction
             sleep(0.5)  # Small delay to debounce the input
 
-        sleep(0.1)  # Short delay before next loop iteration
+        sleep(0.01)  # Short delay before next loop iteration
 
 except KeyboardInterrupt:
     pass
