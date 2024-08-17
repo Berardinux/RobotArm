@@ -40,6 +40,7 @@ def check_limit_switch():
             pwm.ChangeDutyCycle(50)  # Move away from the switch
             while GPIO.input(DIR0) == GPIO.HIGH:
                 sleep(0.01)  # Continue moving until the limit switch is deactivated
+            pwm.ChangeDutyCycle(0)  # Stop motor when limit switch is deactivated
             moving = False
             direction = None
         elif GPIO.input(DIR1) == GPIO.HIGH:
@@ -48,6 +49,7 @@ def check_limit_switch():
             pwm.ChangeDutyCycle(50)  # Move away from the switch
             while GPIO.input(DIR1) == GPIO.HIGH:
                 sleep(0.01)  # Continue moving until the limit switch is deactivated
+            pwm.ChangeDutyCycle(0)  # Stop motor when limit switch is deactivated
             moving = False
             direction = None
         sleep(0.01)  # Short delay to prevent high CPU usage
