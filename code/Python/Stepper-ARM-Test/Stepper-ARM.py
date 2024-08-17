@@ -25,7 +25,7 @@ try:
     while True:
         # Print the state of pin DIR every 5 iterations
         i += 1
-        if i == 5:
+        if i == 20:
             i = 0
             pinDIR_state = GPIO.input(DIR)
             print(f"Pin DIR is {'HIGH' if pinDIR_state == GPIO.HIGH else 'LOW'}")
