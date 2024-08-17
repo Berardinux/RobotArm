@@ -33,18 +33,21 @@ direction = None  # Track the current direction (LEFT, RIGHT, or None)
 
 def check_limit_switch():
     global moving, direction
-    while True:
-        if GPIO.input(DIR0) == GPIO.HIGH:
-            print("Limit switch DIR0 triggered")
-            pwm.ChangeDutyCycle(0)  # Stop the motor
-            moving = False
-            direction = None
-        elif GPIO.input(DIR1) == GPIO.HIGH:
-            print("Limit switch DIR1 triggered")
-            pwm.ChangeDutyCycle(0)  # Stop the motor
-            moving = False
-            direction = None
-        sleep(0.01)  # Short delay to prevent high CPU usage
+    if GPIO.input(DIR0) == GPIO.HIGH:
+        print("Limit switch DIR0 triggered")
+        GPIO.output(DIR, GPIO.HIGH)  # Reverse direction to move away from the switch
+        pwm.ChangeDutyCycle(50)  # Move away from the switch
+        while GPIO.input(DIR0) == GPIO.HIGH:
+            sleep(0.01)  # Continue moving until the limit switch is deactivated
+        pwm.ChangeDutyCycle(0)  # Stop motor when limit switch is deactivated
+
+    elif GPIO.input(DIR1) == GPIO.HIGH:
+        print("Limit switch DIR1 triggered")
+        GPIO.output(DIR, GPIO.LOW)  # Reverse direction to move away from the switch
+        pwm.ChangeDutyCycle(50)  # Move away from the switch
+        while GPIO.input(DIR1) == GPIO.HIGH:
+            sleep(0.01)  # Continue moving until the limit switch is deactivated
+        pwm.ChangeDutyCycle(0)  # Stop motor when limit switch is deactivated
 
 # Start a thread to continuously check the limit switches
 limit_switch_thread = threading.Thread(target=check_limit_switch)
