@@ -32,13 +32,13 @@ def Ramp(actuatedSwitch):
     if actuatedSwitch == 0:
         rampDownDir = GPIO.LOW
         rampUpDir = GPIO.HIGH
-        previousDir = "Left"
-        currentDir = "Right"
+        previousDir = "Right"
+        currentDir = "Left"
     elif actuatedSwitch == 1:
         rampDownDir = GPIO.HIGH
         rampUpDir = GPIO.LOW
-        previousDir = "Right"
-        currentDir = "Left"
+        previousDir = "Left"
+        currentDir = "Right"
 
     # Ramp down loop
     for r in range(start, end, SUB):
