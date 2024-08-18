@@ -6,8 +6,8 @@ STEP = 15
 LIMIT_SWITCH_0 = 18
 LIMIT_SWITCH_1 = 23
 PPS = 1000
-SUB = -4
-ADD = 4
+SUB = -20
+ADD = 20
 i = 0  # Start with i = 0
 
 # Setup GPIO
