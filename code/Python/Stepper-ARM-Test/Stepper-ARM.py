@@ -52,7 +52,6 @@ def Ramp(actuatedSwitch):
         GPIO.output(DIR, rampUpDir)
         sleep(0.0005)  # Adjust delay for smoother ramping
 
-    PPS = 1000  # Reset PPS to 1000 after ramping
     print("Previous Direction:", previousDir)
     print("Current Direction:", currentDir)
     print("Ramp complete")
@@ -73,11 +72,13 @@ try:
         if GPIO.input(LIMIT_SWITCH_0) == GPIO.HIGH:
             print("GPIO LIMIT_SWITCH_0 went HIGH")
             Ramp(0)
+            PPS = 1000  # Reset PPS to 1000 after ramping
             GPIO.output(DIR, GPIO.HIGH)  # Switch direction
             sleep(0.5)  # Small delay to debounce the input
         elif GPIO.input(LIMIT_SWITCH_1) == GPIO.HIGH:
             print("GPIO LIMIT_SWITCH_1 went HIGH")
             Ramp(1)
+            PPS = 1000  # Reset PPS to 1000 after ramping
             GPIO.output(DIR, GPIO.LOW)  # Switch direction
             sleep(0.5)  # Small delay to debounce the input
 
