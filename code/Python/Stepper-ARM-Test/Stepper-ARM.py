@@ -51,6 +51,7 @@ def Ramp(actuatedSwitch):
         GPIO.output(DIR, rampUpDir)
         sleep(0.0005)  # Adjust delay for smoother ramping
 
+    PPS = 1000
     print("Previous Direction:", previousDir)
     print("Current Direction:", currentDir)
     print("Ramp complete")
