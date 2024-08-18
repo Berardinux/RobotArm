@@ -29,31 +29,31 @@ def Ramp(actuatedSwitch):
     end = 100
 
     if actuatedSwitch == 0:
-        rampDownDir = LOW
-        rampUpDir = HIGH
-        previousDir = Left
-        currentDir = Right
+        rampDownDir = GPIO.LOW
+        rampUpDir = GPIO.HIGH
+        previousDir = "Left"
+        currentDir = "Right"
     elif actuatedSwitch == 1:
-        rampDownDir = HIGH
-        rampUpDir = LOW
-        previousDir = Right
-        currentDir = Left
+        rampDownDir = GPIO.HIGH
+        rampUpDir = GPIO.LOW
+        previousDir = "Right"
+        currentDir = "Left"
 
-    # Decrement loop
+    # Ramp down loop
     for r in range(start, end, SUB):
-        pwm = GPIO.PWM(STEP, r)
-        GPIO.output(DIR, GPIO.rampDownDir)
-        sleep(0.0000005)
+        pwm.ChangeFrequency(r)
+        GPIO.output(DIR, rampDownDir)
+        sleep(0.0005)  # Adjust delay for smoother ramping
 
-    # Increment loop
+    # Ramp up loop
     for r in range(end, start, ADD):
-        pwm = GPIO.PWM(STEP, r)
-        GPIO.output(DIR, GPIO.rampUpDir)
-        sleep(0.0000005)
+        pwm.ChangeFrequency(r)
+        GPIO.output(DIR, rampUpDir)
+        sleep(0.0005)  # Adjust delay for smoother ramping
 
-    print("Previous: ", previousDir)
-    print("Current: ", currentDir)
-    print("Ramp")
+    print("Previous Direction:", previousDir)
+    print("Current Direction:", currentDir)
+    print("Ramp complete")
 
 try:
     while True:
