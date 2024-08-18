@@ -14,8 +14,8 @@ i = 0  # Start with i = 0
 GPIO.setmode(GPIO.BCM)  # Use GPIO numbers
 GPIO.setup(DIR, GPIO.OUT)  # Direction pin
 GPIO.setup(STEP, GPIO.OUT)  # Step pin (PWM)
-GPIO.setup(LIMIT_SWITCH_0, GPIO.IN)   # Input pin to change direction
-GPIO.setup(LIMIT_SWITCH_1, GPIO.IN)   # Input pin to change direction
+GPIO.setup(LIMIT_SWITCH_0, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)   # Input pin to change direction
+GPIO.setup(LIMIT_SWITCH_1, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)   # Input pin to change direction
 
 # Initialize PWM on STEP pin with a frequency of 1000 Hz
 pwm = GPIO.PWM(STEP, PPS)  # 1000 Hz frequency
@@ -25,6 +25,7 @@ pwm.start(50)  # Start PWM with a 50% duty cycle
 GPIO.output(DIR, GPIO.HIGH)
 
 def Ramp(actuatedSwitch):
+    global PPS
     start = int(PPS / 1.5)  # Calculate starting point and convert to integer
     end = 100
 
@@ -51,14 +52,14 @@ def Ramp(actuatedSwitch):
         GPIO.output(DIR, rampUpDir)
         sleep(0.0005)  # Adjust delay for smoother ramping
 
-    PPS = 1000
+    PPS = 1000  # Reset PPS to 1000 after ramping
     print("Previous Direction:", previousDir)
     print("Current Direction:", currentDir)
     print("Ramp complete")
 
 try:
     while True:
-        # Print the state of pin DIR every 5 iterations
+        # Print the state of pin DIR every 20 iterations
         i += 1
         if i == 20:
             i = 0
