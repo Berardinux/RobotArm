@@ -5,6 +5,8 @@ DIR = 14
 STEP = 15
 LIMIT_SWITCH_0 = 18
 LIMIT_SWITCH_1 = 23
+SUB = -4
+ADD = 4
 i = 0  # Start with i = 0
 
 # Setup GPIO
@@ -21,8 +23,36 @@ pwm.start(50)  # Start PWM with a 50% duty cycle
 # Set initial direction
 GPIO.output(DIR, GPIO.HIGH)
 
-def Ramp():
+def Ramp(actuatedSwitch):
+    start = int(PPS / 1.5)  # Calculate starting point and convert to integer
+    end = 100
 
+    if actuatedSwitch == 0:
+        rampDownDir = LOW
+        rampUpDir = HIGH
+        previousDir = Left
+        currentDir = Right
+    elif actuatedSwitch == 1:
+        rampDownDir = HIGH
+        rampUpDir = LOW
+        previousDir = Right
+        currentDir = Left
+
+    # Decrement loop
+    for r in range(start, end, SUB):
+        pwm = GPIO.PWM(STEP, r)
+        GPIO.output(DIR, GPIO.rampDownDir)
+        sleep(0.0000005)
+
+    # Increment loop
+    for r in range(end, start, ADD):
+        pwm = GPIO.PWM(STEP, r)
+        GPIO.output(DIR, GPIO.rampUpDir)
+        sleep(0.0000005)
+
+    print("Previous: ", previousDir)
+    print("Current: ", currentDir)
+    print("Ramp")
 
 try:
     while True:
@@ -39,10 +69,12 @@ try:
         # Check if either pin LIMIT_SWITCH_0 or LIMIT_SWITCH_1 goes high
         if GPIO.input(LIMIT_SWITCH_0) == GPIO.HIGH:
             print("GPIO LIMIT_SWITCH_0 went HIGH")
+            Ramp(0)
             GPIO.output(DIR, GPIO.HIGH)  # Switch direction
             sleep(0.5)  # Small delay to debounce the input
         elif GPIO.input(LIMIT_SWITCH_1) == GPIO.HIGH:
             print("GPIO LIMIT_SWITCH_1 went HIGH")
+            Ramp(1)
             GPIO.output(DIR, GPIO.LOW)  # Switch direction
             sleep(0.5)  # Small delay to debounce the input
 
