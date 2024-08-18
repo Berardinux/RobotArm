@@ -5,6 +5,7 @@ DIR = 14
 STEP = 15
 LIMIT_SWITCH_0 = 18
 LIMIT_SWITCH_1 = 23
+PPS = 1000
 SUB = -4
 ADD = 4
 i = 0  # Start with i = 0
@@ -17,7 +18,7 @@ GPIO.setup(LIMIT_SWITCH_0, GPIO.IN)   # Input pin to change direction
 GPIO.setup(LIMIT_SWITCH_1, GPIO.IN)   # Input pin to change direction
 
 # Initialize PWM on STEP pin with a frequency of 1000 Hz
-pwm = GPIO.PWM(STEP, 1000)  # 1000 Hz frequency
+pwm = GPIO.PWM(STEP, PPS)  # 1000 Hz frequency
 pwm.start(50)  # Start PWM with a 50% duty cycle
 
 # Set initial direction
