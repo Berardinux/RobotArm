@@ -17,8 +17,8 @@ try:
   time.sleep(1)
   servo.ChangeDutyCycle(10)
   time.sleep(1)
-  servo.ChangeDutyCycle(12)
-  time.sleep(1)
+  #servo.ChangeDutyCycle(12)
+  #time.sleep(1)
   servo.ChangeDutyCycle(2)
   time.sleep(1)
 finally:
