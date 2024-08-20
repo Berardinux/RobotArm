@@ -25,9 +25,9 @@ def Ramp(OldDutyCycle, NewDutyCycle):
 # 6.2 in 180 degrees
 
 try:
-  servo.ChangeDutyCycle(7)
+  servo.ChangeDutyCycle(8)
   sleep(1)
-  Ramp(7, 8)
+  Ramp(8, 9)
   sleep(1)
   #servo.ChangeDutyCycle(4)
   #time.sleep(1)
