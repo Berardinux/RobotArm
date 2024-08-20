@@ -23,9 +23,9 @@ def Ramp(OldDutyCycle, NewDutyCycle):
             sleep(.01)
 
 try:
-  servo.ChangeDutyCycle(6)
+  servo.ChangeDutyCycle(7)
   sleep(1)
-  Ramp(6, 7)
+  Ramp(7, 6.5)
   sleep(1)
   #servo.ChangeDutyCycle(4)
   #time.sleep(1)
