@@ -21,14 +21,15 @@ def Ramp(OldDutyCycle, NewDutyCycle):
             servo.ChangeDutyCycle(i)
             i -= 0.01  # Decrement by 0.1
             sleep(.01)
-# - = back + forward
+
+# (- = back, end of travel is 2) (+ = forward, end of travel is 8.5)
 # 4.8 is 180 degrees 
 # 7.9 is 90 degrees
 
 try:
-  servo.ChangeDutyCycle(8)
+  servo.ChangeDutyCycle(8.5)
   sleep(1)
-  Ramp(8, 8.5)
+  Ramp(8.5, 4.8)
   sleep(1)
   #servo.ChangeDutyCycle(4)
   #time.sleep(1)
