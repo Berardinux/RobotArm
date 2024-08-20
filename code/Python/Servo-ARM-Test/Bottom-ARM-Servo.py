@@ -13,19 +13,19 @@ def Ramp(OldDutyCycle, NewDutyCycle):
         while i <= NewDutyCycle:
             servo.ChangeDutyCycle(i)
             i += 0.1  # Increment by 0.1
-            time.sleep(.5)
+            time.sleep(1)
     elif OldDutyCycle > NewDutyCycle:
         # Ramp down
         i = OldDutyCycle
         while i >= NewDutyCycle:
             servo.ChangeDutyCycle(i)
             i -= 0.1  # Decrement by 0.1
-            time.sleep(.5)
+            time.sleep(1)
 
   
 
 try:
-  servo.ChangeDutyCycle(4)
+  servo.ChangeDutyCycle(2)
   sleep(1)
   #servo.ChangeDutyCycle(4)
   #time.sleep(1)
