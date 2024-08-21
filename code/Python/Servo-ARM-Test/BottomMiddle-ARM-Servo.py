@@ -14,6 +14,9 @@ middle_servo = GPIO.PWM(20, 50)
 bottom_servo = GPIO.PWM(21, 50)
 middle_servo.start(0)
 bottom_servo.start(0)
+rotation_home = 7.15
+bottom_home = 3.2
+middle_home = 10.8
 
 def Ramp(servo, OldDutyCycle, NewDutyCycle):
     if OldDutyCycle < NewDutyCycle:
@@ -47,8 +50,8 @@ def angle_to_duty_cycle(angle):
     return 2 + (angle / 180) * 10
 
 # Home position in terms of x, y coordinates
-x_home = 0  # Set this to your desired home x-coordinate
-y_home = 19  # Set this to your desired home y-coordinate
+x_home = 10  # Set this to your desired home x-coordinate
+y_home = 10  # Set this to your desired home y-coordinate
 L = 10  # Length of each arm segment (assuming both arms have the same length)
 
 # Calculate the angles for the home position
@@ -60,8 +63,8 @@ middle_duty_cycle = angle_to_duty_cycle(theta2_deg)
 
 # Move both arms to the home position
 try:
-    threading.Thread(target=Ramp, args=(middle_servo, 6.2, middle_duty_cycle)).start()
-    threading.Thread(target=Ramp, args=(bottom_servo, 3.1, bottom_duty_cycle)).start()
+    threading.Thread(target=Ramp, args=(middle_servo, middle_home, middle_duty_cycle)).start()
+    threading.Thread(target=Ramp, args=(bottom_servo, bottom_home, bottom_duty_cycle)).start()
     sleep(2)
 
 finally:
