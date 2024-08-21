@@ -68,6 +68,6 @@ finally:
     middle_servo.stop()
     bottom_servo.stop()
     GPIO.cleanup()
-    
+    print(f"{bottom_duty_cycle} {middle_duty_cycle}")
     os.system(f"python3 ServoHome.py 7.15 {bottom_duty_cycle} {middle_duty_cycle}")
 
