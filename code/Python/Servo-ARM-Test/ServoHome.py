@@ -32,17 +32,29 @@ def Ramp(servo, OldDutyCycle, NewDutyCycle):
             i -= 0.01
             sleep(0.01)
 
-# Get the duty cycles from command-line arguments
-OldPostionRotation = float(sys.argv[1])
-OldPostionBottom = float(sys.argv[2])
-OldPositionMiddle = float(sys.argv[3])
+# Error handling for command-line arguments
+if len(sys.argv) != 4:
+    print("Usage: python3 ServoHome.py <OldPositionRotation> <OldPositionBottom> <OldPositionMiddle>")
+    sys.exit(1)
 
-# Home = (RotationServo = 7.15) (BottomServo = 3.2) (MiddleServo = 10.8)
+try:
+    OldPostionRotation = float(sys.argv[1])
+    OldPostionBottom = float(sys.argv[2])
+    OldPositionMiddle = float(sys.argv[3])
+except ValueError:
+    print("Error: All arguments must be valid float values.")
+    sys.exit(1)
+
+# Home positions
 rotation_home = 7.15
 bottom_home = 3.2
 middle_home = 10.8
 
-# Move all servos to the inputted positions
+# Print initial and home positions for debugging
+print(f"Moving servos from positions: Rotation={OldPostionRotation}, Bottom={OldPostionBottom}, Middle={OldPositionMiddle}")
+print(f"Home positions: Rotation={rotation_home}, Bottom={bottom_home}, Middle={middle_home}")
+
+# Move all servos to the home position
 try:
     threading.Thread(target=Ramp, args=(rotation_servo, OldPostionRotation, rotation_home)).start()
     threading.Thread(target=Ramp, args=(bottom_servo, OldPostionBottom, bottom_home)).start()
