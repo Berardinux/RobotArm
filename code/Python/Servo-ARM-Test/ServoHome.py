@@ -1,6 +1,7 @@
 import RPi.GPIO as GPIO
 from time import sleep
 import threading
+import sys
 
 # Setup
 GPIO.setmode(GPIO.BCM)
@@ -31,16 +32,16 @@ def Ramp(servo, OldDutyCycle, NewDutyCycle):
             i -= 0.01
             sleep(0.01)
 
-# Duty cycles for the home position
-rotation_home = 7.15
-bottom_home = 3.2
-middle_home = 10.8
+# Get the duty cycles from command-line arguments
+rotation_home = float(sys.argv[1])
+bottom_home = float(sys.argv[2])
+middle_home = float(sys.argv[3])
 
-# Move all servos to the home position
+# Move all servos to the inputted positions
 try:
-    threading.Thread(target=Ramp, args=(rotation_servo, 7.15, rotation_home)).start()
-    threading.Thread(target=Ramp, args=(bottom_servo, 3.2, bottom_home)).start()
-    threading.Thread(target=Ramp, args=(middle_servo, 10.8, middle_home)).start()
+    threading.Thread(target=Ramp, args=(rotation_servo, 0, rotation_home)).start()
+    threading.Thread(target=Ramp, args=(bottom_servo, 0, bottom_home)).start()
+    threading.Thread(target=Ramp, args=(middle_servo, 0, middle_home)).start()
     sleep(3)  # Allow time for movement
 
 finally:
