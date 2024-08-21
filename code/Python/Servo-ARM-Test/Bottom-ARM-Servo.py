@@ -26,7 +26,7 @@ def Ramp(OldDutyCycle, NewDutyCycle):
 # 4.8 is 180 degrees 
 # 7.9 is 90 degrees
 # 2 is 270 degrees
-# Home = (RotationServo = 6.3) (BottomServo = 3.2) (MiddleServo = 10.8)
+# Home = (RotationServo = 7.15) (BottomServo = 3.2) (MiddleServo = 10.8)
 
 try:
   servo.ChangeDutyCycle(3.1)

@@ -23,7 +23,7 @@ def Ramp(OldDutyCycle, NewDutyCycle):
             sleep(.01)
             
 # - = back + forward
-# 6.3 is the middle
+# 7.15 is the middle
 
 try:
   servo.ChangeDutyCycle(6.3)
