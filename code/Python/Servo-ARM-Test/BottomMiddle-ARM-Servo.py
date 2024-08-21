@@ -47,7 +47,7 @@ def angle_to_duty_cycle(angle):
 
 # Home position in terms of x, y coordinates
 x_home = 0  # Set this to your desired home x-coordinate
-y_home = 20  # Set this to your desired home y-coordinate
+y_home = 19  # Set this to your desired home y-coordinate
 L = 10  # Length of each arm segment (assuming both arms have the same length)
 
 # Calculate the angles for the home position
