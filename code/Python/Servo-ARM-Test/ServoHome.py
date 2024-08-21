@@ -3,6 +3,9 @@ from time import sleep
 import threading
 import sys
 
+# Disable GPIO warnings
+GPIO.setwarnings(False)
+
 # Setup
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(20, GPIO.OUT)  # Middle arm
