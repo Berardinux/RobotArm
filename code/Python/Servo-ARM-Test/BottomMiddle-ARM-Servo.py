@@ -2,6 +2,7 @@ import RPi.GPIO as GPIO
 from time import sleep
 import threading
 import math
+import os
 
 # Setup
 GPIO.setmode(GPIO.BCM)
@@ -67,3 +68,6 @@ finally:
     middle_servo.stop()
     bottom_servo.stop()
     GPIO.cleanup()
+    
+    os.system(f"python3 ServoHome.py 7.15 {bottom_duty_cycle} {middle_duty_cycle}")
+

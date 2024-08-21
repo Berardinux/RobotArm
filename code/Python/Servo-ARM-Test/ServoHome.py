@@ -33,15 +33,20 @@ def Ramp(servo, OldDutyCycle, NewDutyCycle):
             sleep(0.01)
 
 # Get the duty cycles from command-line arguments
-rotation_home = float(sys.argv[1])
-bottom_home = float(sys.argv[2])
-middle_home = float(sys.argv[3])
+OldPostionRotation = float(sys.argv[1])
+OldPostionBottom = float(sys.argv[2])
+OldPositionMiddle = float(sys.argv[3])
+
+# Home = (RotationServo = 7.15) (BottomServo = 3.2) (MiddleServo = 10.8)
+rotation_home = 7.15
+bottom_home = 3.2
+middle_home = 10.8
 
 # Move all servos to the inputted positions
 try:
-    threading.Thread(target=Ramp, args=(rotation_servo, 0, rotation_home)).start()
-    threading.Thread(target=Ramp, args=(bottom_servo, 0, bottom_home)).start()
-    threading.Thread(target=Ramp, args=(middle_servo, 0, middle_home)).start()
+    threading.Thread(target=Ramp, args=(rotation_servo, OldPostionRotation, rotation_home)).start()
+    threading.Thread(target=Ramp, args=(bottom_servo, OldPostionBottom, bottom_home)).start()
+    threading.Thread(target=Ramp, args=(middle_servo, OldPositionMiddle, middle_home)).start()
     sleep(3)  # Allow time for movement
 
 finally:
