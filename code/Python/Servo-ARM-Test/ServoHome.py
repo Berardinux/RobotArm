@@ -7,12 +7,12 @@ import sys
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(20, GPIO.OUT)  # Middle arm
 GPIO.setup(21, GPIO.OUT)  # Bottom arm
-GPIO.setup(22, GPIO.OUT)  # Rotation servo
+GPIO.setup(12, GPIO.OUT)  # Rotation servo
 
 # Initialize servos
 middle_servo = GPIO.PWM(20, 50)
 bottom_servo = GPIO.PWM(21, 50)
-rotation_servo = GPIO.PWM(22, 50)
+rotation_servo = GPIO.PWM(12, 50)
 
 middle_servo.start(0)
 bottom_servo.start(0)
