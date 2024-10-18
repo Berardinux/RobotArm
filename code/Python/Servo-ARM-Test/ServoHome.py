@@ -17,9 +17,50 @@ middle_servo = GPIO.PWM(20, 50)
 bottom_servo = GPIO.PWM(21, 50)
 rotation_servo = GPIO.PWM(12, 50)
 
-middle_servo.start(0)
-bottom_servo.start(0)
-rotation_servo.start(0)
+# Error handling for command-line arguments
+if len(sys.argv) != 4:
+    OldPositionRotation = 7.0
+    OldPositionBottom = 3.0
+    OldPositionMiddle = 10.6
+else:
+    try:
+        OldPositionRotation = float(sys.argv[1])
+        OldPositionBottom = float(sys.argv[2])
+        OldPositionMiddle = float(sys.argv[3])
+    except ValueError:
+        print("Error: All arguments must be valid float values.")
+        sys.exit(1)
+
+# Initialize servos at old positions
+middle_servo.start(OldPositionMiddle)
+bottom_servo.start(OldPositionBottom)
+rotation_servo.start(OldPositionRotation)
+
+# Home positions
+rotation_home = 7.15
+bottom_home = 3.2
+middle_home = 10.8
+
+def MoveHome(OldPositionRotation, OldPositionBottom, OldPositionMiddle):
+    # Move all servos to the home position
+    try:
+        thread_rotation = threading.Thread(target=Ramp, args=(rotation_servo, OldPositionRotation, rotation_home))
+        thread_bottom = threading.Thread(target=Ramp, args=(bottom_servo, OldPositionBottom, bottom_home))
+        thread_middle = threading.Thread(target=Ramp, args=(middle_servo, OldPositionMiddle, middle_home))
+   
+        thread_rotation.start()
+        thread_bottom.start()
+        thread_middle.start()
+
+        thread_rotation.join()
+        thread_bottom.join()
+        thread_middle.join()
+
+    finally:
+        rotation_servo.stop()
+        bottom_servo.stop()
+        middle_servo.stop()
+        GPIO.cleanup()
 
 def Ramp(servo, OldDutyCycle, NewDutyCycle):
     if OldDutyCycle < NewDutyCycle:
@@ -34,38 +75,11 @@ def Ramp(servo, OldDutyCycle, NewDutyCycle):
             servo.ChangeDutyCycle(i)
             i -= 0.01
             sleep(0.01)
-
-# Error handling for command-line arguments
-if len(sys.argv) != 4:
-    print("Usage: python3 ServoHome.py <OldPositionRotation> <OldPositionBottom> <OldPositionMiddle>")
-    sys.exit(1)
-
-try:
-    OldPostionRotation = float(sys.argv[1])
-    OldPostionBottom = float(sys.argv[2])
-    OldPositionMiddle = float(sys.argv[3])
-except ValueError:
-    print("Error: All arguments must be valid float values.")
-    sys.exit(1)
-
-# Home positions
-rotation_home = 7.15
-bottom_home = 3.2
-middle_home = 10.8
+    elif OldDutyCycle == NewDutyCycle:
+        print("No Change")
 
 # Print initial and home positions for debugging
-print(f"Moving servos from positions: Rotation={OldPostionRotation}, Bottom={OldPostionBottom}, Middle={OldPositionMiddle}")
+print(f"Moving servos from positions: Rotation={OldPositionRotation}, Bottom={OldPositionBottom}, Middle={OldPositionMiddle}")
 print(f"Home positions: Rotation={rotation_home}, Bottom={bottom_home}, Middle={middle_home}")
 
-# Move all servos to the home position
-try:
-    threading.Thread(target=Ramp, args=(rotation_servo, OldPostionRotation, rotation_home)).start()
-    threading.Thread(target=Ramp, args=(bottom_servo, OldPostionBottom, bottom_home)).start()
-    threading.Thread(target=Ramp, args=(middle_servo, OldPositionMiddle, middle_home)).start()
-    sleep(3)  # Allow time for movement
-
-finally:
-    rotation_servo.stop()
-    bottom_servo.stop()
-    middle_servo.stop()
-    GPIO.cleanup()
+MoveHome(OldPositionRotation, OldPositionBottom, OldPositionMiddle)
