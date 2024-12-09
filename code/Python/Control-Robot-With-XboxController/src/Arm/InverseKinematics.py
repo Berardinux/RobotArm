@@ -1,66 +1,53 @@
 import math
 
-def calculate_angles(z, y, L):
-    """Calculate the angles needed for the given Z and Y positions."""
-    # Clamp inputs to ensure they are within the arm's physical reach
-    max_reach = 2 * L
-    distance = math.sqrt(z**2 + y**2)
+def moveToPos(x, y, z):
+    """
+    Calculate the angles for a robotic arm to move to the specified position.
 
-    if distance > max_reach:
-        # Scale z and y to fit within the reachable area
-        scale_factor = max_reach / distance
-        z *= scale_factor
-        y *= scale_factor
-        print(f"Inputs scaled: Z={z}, Y={y}")
+    Parameters:
+    x (float): Target position in the X direction (always 0 here for simplicity).
+    y (float): Target position in the Y direction.
+    z (float): Target position in the Z direction.
 
-    try:
-        # Compute cos(theta2): Angle between the two arms
-        cos_theta2 = (z**2 + y**2 - 2 * L**2) / (2 * L**2)
-        cos_theta2 = max(-1.0, min(1.0, cos_theta2))  # Clamp to valid range
-        theta2 = math.acos(cos_theta2)
+    Returns:
+    tuple: (base_angle, arm1_angle, arm2_angle)
+    """
+    ARM_LENGTH = 265  # Length of each arm segment in mm
+    MAX_REACH = 2 * ARM_LENGTH  # Maximum reach in mm
 
-        # Compute sin(theta2) for stability
-        sin_theta2 = math.sqrt(1 - cos_theta2**2)
+    # Calculate the target distance from the origin
+    distance = math.sqrt(y**2 + z**2)
 
-        # Compute theta1: Base angle
-        theta1 = math.atan2(y, z) - math.atan2(L * sin_theta2, L + L * cos_theta2)
+    if distance > MAX_REACH:
+        raise ValueError("Target position is beyond the arm's reach.")
 
-        # Debug intermediate values
-        print(f"cos_theta2: {cos_theta2}, sin_theta2: {sin_theta2}, theta1: {math.degrees(theta1)}, theta2: {math.degrees(theta2)}")
+    # Base rotation angle (simplified, assuming fixed X-axis position)
+    base_angle = math.atan2(y, z) * (180 / math.pi)
 
-    except ValueError as e:
-        print(f"Error in calculating angles: {e}")
-        return None, None
+    # Compute elevation and bending angles
+    phi = math.atan2(z, y) * (180 / math.pi)
+    theta = math.acos(distance / (2 * ARM_LENGTH)) * (180 / math.pi)
 
-    # Convert radians to degrees
-    theta1_deg = math.degrees(theta1)
-    theta2_deg = math.degrees(theta2)
+    arm1_angle = phi + theta  # First arm segment angle
+    arm2_angle = phi - theta  # Second arm segment angle
 
-    # Ensure non-zero contribution from theta2
-    if theta2_deg < 1e-3:  # Near-zero angle correction
-        theta2_deg = 1.0  # Add minimal bending for realistic simulation
-
-    return theta1_deg, theta2_deg
-
-
+    return base_angle, arm1_angle, arm2_angle
 
 
 if __name__ == "__main__":
     # Example usage: Test cases
-    L = 10  # Length of each arm segment
-
     test_cases = [
-        (5, 5),   # Inside reachable area
-        (10, 10), # On the edge of maximum reach
-        (15, 15), # Beyond maximum reach
-        (0, 20),  # Purely vertical input
-        (-5, 5),  # Negative Z input
+        (0, 10, 10),   # Random valid position
+        (0, 50, 50),   # Position along the diagonal
+        (0, 100, 100), # Near the arm's max reach
+        (0, 150, 150), # Beyond arm's reach (will raise ValueError)
+        (0, -10, -10)  # Negative inputs for all dimensions
     ]
 
-    for z, y in test_cases:
-        print(f"\nTesting with Z: {z}, Y: {y}")
-        theta1, theta2 = calculate_angles(z, y, L)
-        if theta1 is not None and theta2 is not None:
-            print(f"Calculated Angles - Theta1: {theta1}°, Theta2: {theta2}°")
-        else:
-            print("Angles could not be calculated.")
+    for x, y, z in test_cases:
+        print(f"\nTesting with X: {x}, Y: {y}, Z: {z}")
+        try:
+            b, a1, a2 = moveToPos(x, y, z)
+            print(f"Calculated Angles - Base: {b:.2f}°, Shoulder: {a1:.2f}°, Elbow: {a2:.2f}°")
+        except ValueError as e:
+            print(f"Error: {e}")

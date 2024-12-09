@@ -2,7 +2,7 @@ import threading
 from time import sleep
 from Scaler_LeftAnalogStick_XboxBoxController import get_z_value
 from Scaler_RightAnalogStick_XboxBoxController import get_y_value
-from InverseKinematics import calculate_angles
+from InverseKinematics import moveToPos
 
 # Global variables for Z and Y values
 z_value = 500  # Initial Z-axis position
@@ -15,7 +15,7 @@ def update_z():
     while not exit_program:
         try:
             z_value = get_z_value()  # Fetch Z value
-            print(f"Z Value: {z_value}")  # Debugging
+            print(f"Z Value: {z_value:.2f} mm")  # Debugging
         except Exception as e:
             print(f"Error fetching Z value: {e}")
         sleep(0.05)
@@ -26,7 +26,7 @@ def update_y():
     while not exit_program:
         try:
             y_value = get_y_value()  # Fetch Y value
-            print(f"Y Value: {y_value}")  # Debugging
+            print(f"Y Value: {y_value:.2f} mm")  # Debugging
         except Exception as e:
             print(f"Error fetching Y value: {e}")
         sleep(0.05)
@@ -34,7 +34,6 @@ def update_y():
 # Main function to run the threads
 def main():
     global exit_program
-    L = 10  # Length of each arm segment
 
     try:
         # Create threads to fetch Z and Y values
@@ -47,12 +46,9 @@ def main():
         while not exit_program:
             try:
                 # Pass Z and Y values to calculate angles
-                theta1, theta2 = calculate_angles(z_value, y_value, L)
-                if theta1 is not None and theta2 is not None:
-                    print(f"Bottom Arm - Angle: {theta1}°, Middle Arm - Angle: {theta2}°")
-                else:
-                    print("Unable to calculate angles. Skipping.")
-            except Exception as e:
+                base_angle, arm1_angle, arm2_angle = moveToPos(0, y_value, z_value)
+                print(f"Base: {base_angle:.2f}°, Shoulder: {arm1_angle:.2f}°, Elbow: {arm2_angle:.2f}°")
+            except ValueError as e:
                 print(f"Error in angle calculation: {e}")
             sleep(0.05)  # Adjust responsiveness here
 

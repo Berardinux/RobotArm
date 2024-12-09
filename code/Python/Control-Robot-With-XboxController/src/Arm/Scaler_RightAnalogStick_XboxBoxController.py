@@ -1,6 +1,7 @@
 import evdev
 from time import sleep
 import threading
+import numpy as np
 
 # Open the event file for your input device (change to your specific event number)
 device = evdev.InputDevice('/dev/input/event25')  # Replace with your specific event file
@@ -47,10 +48,12 @@ def monitor_events():
     except KeyboardInterrupt:
         exit_program = True
 
-# Function to return the current Y value
+# Function to return the mapped Y value as y_coordinates
 def get_y_value():
     global Y
-    return Y
+    # Map Y from [0, 1000] to [0, 10]
+    y_coordinates = np.interp(Y, [0, 1000], [0, 530])
+    return y_coordinates
 
 # Start threads
 y_thread = threading.Thread(target=update_y, daemon=True)
@@ -62,8 +65,8 @@ event_thread.start()
 if __name__ == "__main__":
     try:
         while True:
-            # Debugging: print the current Y value
-            print(f"Y Value: {get_y_value()}")
+            # Debugging: print the current mapped Y value
+            print(f"Y Coordinates: {get_y_value()}")
             sleep(0.1)
     except KeyboardInterrupt:
         exit_program = True

@@ -1,6 +1,7 @@
 import evdev
 from time import sleep
 import threading
+import numpy as np
 
 # Open the event file for your input device (change to your specific event number)
 device = evdev.InputDevice('/dev/input/event25')  # Replace with your specific event file
@@ -46,10 +47,12 @@ def monitor_events():
     except KeyboardInterrupt:
         exit_program = True
 
-# Function to return the current Z value
+# Function to return the mapped Z value as z_coordinates
 def get_z_value():
     global Z
-    return Z
+    # Map Z from [0, 1000] to [0, 10]
+    z_coordinates = np.interp(Z, [0, 1000], [0, 530])
+    return z_coordinates
 
 # Start threads
 z_thread = threading.Thread(target=update_z, daemon=True)
@@ -61,8 +64,8 @@ monitor_thread.start()
 if __name__ == "__main__":
     try:
         while True:
-            # Debugging: print the current Z value
-            print(f"Z Value: {get_z_value()}")
+            # Debugging: print the current mapped Z value
+            print(f"Z Coordinates: {get_z_value()}")
             sleep(0.1)
     except KeyboardInterrupt:
         exit_program = True
