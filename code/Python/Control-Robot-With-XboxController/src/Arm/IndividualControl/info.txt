@@ -1,0 +1,11 @@
+# Home = (RotationServo = 7.15) (BottomServo = 3.2) (MiddleServo = 10.8)
+# Shoulder # (- = back, end of travel is 2) (+ = forward, end of travel is 8.5)
+# 7.7 is 0 degrees
+# 4.5 is 90 degrees
+# 1.7 is 180 degrees
+
+# Elbow (- = back, end of travel is 2) (+ = forward, end of travel is 10.8)
+
+# 9   is 0  degrees
+# 6.2 is 90 degrees
+# 3.2 is 180 degrees
