@@ -4,7 +4,7 @@ import threading
 import numpy as np
 
 # Open the event file for your input device (change to your specific event number)
-device = evdev.InputDevice('/dev/input/event25')  # Replace with your specific event file
+device = evdev.InputDevice('/dev/input/event4')  # Replace with your specific event file
 print(f"Device: {device.path}, Name: {device.name}, Phys: {device.phys}")
 
 Y = 500  # Initial Y-axis position
@@ -66,7 +66,7 @@ if __name__ == "__main__":
     try:
         while True:
             # Debugging: print the current mapped Y value
-            print(f"Y Coordinates: {get_y_value()}")
+            #print(f"Y Coordinates: {get_y_value()}")
             sleep(0.1)
     except KeyboardInterrupt:
         exit_program = True

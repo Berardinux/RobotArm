@@ -4,7 +4,7 @@ import threading
 import numpy as np
 
 # Open the event file for your input device (change to your specific event number)
-device = evdev.InputDevice('/dev/input/event25')  # Replace with your specific event file
+device = evdev.InputDevice('/dev/input/event4')  # Replace with your specific event file
 print(f"Device: {device.path}, Name: {device.name}, Phys: {device.phys}")
 
 Z = 500  # Initial Z-axis position
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     try:
         while True:
             # Debugging: print the current mapped Z value
-            print(f"Z Coordinates: {get_z_value()}")
+            #print(f"Z Coordinates: {get_z_value()}")
             sleep(0.1)
     except KeyboardInterrupt:
         exit_program = True

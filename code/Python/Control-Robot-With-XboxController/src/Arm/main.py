@@ -63,11 +63,11 @@ def main():
             try:
                 # Calculate angles from inverse kinematics
                 base_angle, arm1_angle, arm2_angle = moveToPos(0, y_value, z_value)
-                print(f"Base: {base_angle:.2f}°, Shoulder: {arm1_angle:.2f}°, Elbow: {arm2_angle:.2f}°")
+                #print(f"Base: {base_angle:.2f}°, Shoulder: {arm1_angle:.2f}°, Elbow: {arm2_angle:.2f}°")
 
                 # Convert shoulder and elbow angles to PWM signals
                 shoulder_pwm, elbow_pwm = convert_angles_to_pwm(arm1_angle, arm2_angle)
-                print(f"Shoulder PWM: {shoulder_pwm:.2f}, Elbow PWM: {elbow_pwm:.2f}")
+                #print(f"Shoulder PWM: {shoulder_pwm:.2f}, Elbow PWM: {elbow_pwm:.2f}")
 
                 # Note: If your servo expects duty cycles in a certain range (like 2%-12%),
                 # and the PWM values are not in that range, you may need to rescale them.
