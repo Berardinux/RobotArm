@@ -7,7 +7,7 @@ import numpy as np
 device = evdev.InputDevice('/dev/input/event4')  # Replace with your specific event file
 print(f"Device (Hand): {device.path}, Name: {device.name}, Phys: {device.phys}")
 
-HAND_RAW = 980  # Initial raw hand position (0-1000 range)
+HAND_RAW = 100  # Initial raw hand position (0-1000 range)
 exit_program = False
 
 def map_value(x, in_min, in_max, out_min, out_max):

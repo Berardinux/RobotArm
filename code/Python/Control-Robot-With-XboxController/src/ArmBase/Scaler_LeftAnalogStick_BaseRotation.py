@@ -7,7 +7,7 @@ import numpy as np
 device = evdev.InputDevice('/dev/input/event4')  # Replace with your specific event file
 print(f"Device (Base Rotation): {device.path}, Name: {device.name}, Phys: {device.phys}")
 
-BASE_RAW = 150   # Initial raw base rotation value (0-1000 range)
+BASE_RAW = 500   # Initial raw base rotation value (0-1000 range)
 current_value = 32768  # Neutral stick position
 DEAD_ZONE = 1000
 exit_program = False
