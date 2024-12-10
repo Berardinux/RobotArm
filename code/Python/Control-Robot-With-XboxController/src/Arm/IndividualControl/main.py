@@ -18,7 +18,7 @@ def update_shoulder():
     while not exit_program:
         try:
             shoulder_value = get_shoulder_value()  # Fetch shoulder value (scaled)
-            print(f"Shoulder Value: {shoulder_value:.2f}")  # Debugging
+            print(f"Shoulder Value: {shoulder_value:.2f} /\\ Elbow Value: {elbow_value:.2f}")  # Debugging
         except Exception as e:
             print(f"Error fetching shoulder value: {e}")
         sleep(0.05)
@@ -28,7 +28,7 @@ def update_elbow():
     while not exit_program:
         try:
             elbow_value = get_elbow_value()  # Fetch elbow value (scaled)
-            print(f"Elbow Value: {elbow_value:.2f}")  # Debugging
+            #print(f"Elbow Value: {elbow_value:.2f}")  # Debugging
         except Exception as e:
             print(f"Error fetching elbow value: {e}")
         sleep(0.05)
