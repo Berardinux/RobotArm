@@ -5,8 +5,8 @@ from Scaler_LeftAnalogStick_Shoulder import get_shoulder_value
 from Scaler_RightAnalogStick_Elbow import get_elbow_value
 
 # Global variables for shoulder and elbow values
-shoulder_value = 500  # Initial shoulder position (0-1000 mapped later)
-elbow_value = 500     # Initial elbow position (0-1000 mapped later)
+shoulder_value = 150  # Initial shoulder position (0-1000 mapped later)
+elbow_value = 980     # Initial elbow position (0-1000 mapped later)
 exit_program = False  # Flag to stop threads
 
 # Servo GPIO pins
