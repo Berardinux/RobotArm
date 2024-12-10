@@ -3,73 +3,68 @@ from time import sleep
 import threading
 import numpy as np
 
-# Open the event file for your input device (change to your specific event number)
+# Adjust event file as needed
 device = evdev.InputDevice('/dev/input/event4')  # Replace with your specific event file
-print(f"Device: {device.path}, Name: {device.name}, Phys: {device.phys}")
+print(f"Device (Elbow): {device.path}, Name: {device.name}, Phys: {device.phys}")
 
-Y = 500  # Initial Y-axis position
-current_value = 32768  # Current analog stick position (neutral value)
-DEAD_ZONE = 1000  # Define a dead zone for minor stick movements
-exit_program = False  # Flag to stop threads
+ELBOW_RAW = 500
+current_value = 32768
+DEAD_ZONE = 1000
+exit_program = False
 
-def update_y():
-    """Continuously adjust Y based on the analog stick value."""
-    global Y, current_value, exit_program
+def update_elbow_raw():
+    """Continuously adjust ELBOW_RAW based on the right analog stick."""
+    global ELBOW_RAW, current_value, exit_program
     while not exit_program:
-        # Skip updates if the stick is in the dead zone
         if abs(current_value - 32768) > DEAD_ZONE:
-            if current_value > 42768:  # Stick pulled backward
-                if current_value > 60535:  # Fast speed
-                    Y -= 7
-                elif current_value > 51652:  # Medium speed
-                    Y -= 3
-                else:  # Slow speed
-                    Y -= 1
-            elif current_value < 22768:  # Stick pushed forward
-                if current_value < 5000:  # Fast speed
-                    Y += 7
-                elif current_value < 13883:  # Medium speed
-                    Y += 3
-                else:  # Slow speed
-                    Y += 1
+            if current_value > 42768:  
+                if current_value > 60535:  
+                    ELBOW_RAW -= 7
+                elif current_value > 51652: 
+                    ELBOW_RAW -= 3
+                else:                      
+                    ELBOW_RAW -= 1
+            elif current_value < 22768: 
+                if current_value < 5000:  
+                    ELBOW_RAW += 7
+                elif current_value < 13883:
+                    ELBOW_RAW += 3
+                else:
+                    ELBOW_RAW += 1
 
-        # Keep Y within bounds
-        Y = max(0, min(Y, 1000))
-        sleep(0.05)  # Adjust as needed for smoother response
+        # Keep ELBOW_RAW within [0, 1000]
+        ELBOW_RAW = max(0, min(ELBOW_RAW, 1000))
+        sleep(0.05)
 
 def monitor_events():
-    """Monitor events to update the current analog stick value."""
+    """Monitor events for the right analog stick (Elbow)."""
     global current_value, exit_program
     try:
         for event in device.read_loop():
-            if event.type == evdev.ecodes.EV_ABS:
-                if event.code == evdev.ecodes.ABS_RZ:  # Right analog stick's vertical axis
-                    current_value = event.value
+            if event.type == evdev.ecodes.EV_ABS and event.code == evdev.ecodes.ABS_RZ:
+                current_value = event.value
     except KeyboardInterrupt:
         exit_program = True
 
-# Function to return the mapped Y value as y_coordinates
-def get_y_value():
-    global Y
-    # Map Y from [0, 1000] to [0, 10]
-    y_coordinates = np.interp(Y, [0, 1000], [2, 10.8])
-    return y_coordinates
+def get_elbow_value():
+    global ELBOW_RAW
+    # Map [0,1000] → [2,10.8] for Elbow based on your servo range
+    return np.interp(ELBOW_RAW, [0, 1000], [2, 10.8])
 
 # Start threads
-y_thread = threading.Thread(target=update_y, daemon=True)
+elbow_thread = threading.Thread(target=update_elbow_raw, daemon=True)
 event_thread = threading.Thread(target=monitor_events, daemon=True)
-
-y_thread.start()
+elbow_thread.start()
 event_thread.start()
 
 if __name__ == "__main__":
     try:
         while True:
-            # Debugging: print the current mapped Y value
-            #print(f"Y Coordinates: {get_y_value()}")
+            # Debugging: print the current mapped elbow value
+            #print(f"Elbow Mapped Value: {get_elbow_value():.2f}")
             sleep(0.1)
     except KeyboardInterrupt:
         exit_program = True
-        y_thread.join()
+        elbow_thread.join()
         event_thread.join()
-        print("Program exited.")
+        print("Elbow Scaler exited.")
