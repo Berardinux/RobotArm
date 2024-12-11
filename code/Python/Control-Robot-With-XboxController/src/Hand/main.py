@@ -34,9 +34,9 @@ def main():
             # Example: Map [2,12] to [1000,2000] µs, and [2,10.8] similarly.
             
             # For wrist:
-            wrist_pulse = np.interp(wrist_value, [2, 12], [1000, 2000])
+            wrist_pulse = np.interp(wrist_value, [2, 12], [500, 2500])
             # For hand:
-            hand_pulse = np.interp(hand_value, [2, 10.8], [1000, 2000])
+            hand_pulse = np.interp(hand_value, [2, 10.8], [500, 2500])
 
             # Debugging (optional):
             #print(f"Wrist Pulse: {wrist_pulse}µs, Hand Pulse: {hand_pulse}µs")

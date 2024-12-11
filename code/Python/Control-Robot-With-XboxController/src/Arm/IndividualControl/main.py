@@ -69,8 +69,8 @@ def main():
                 
                 # Example: Map [2,12] duty cycle to [1000,2000] µs pulse width
                 # Adjust as necessary based on your servo specifications.
-                shoulder_pulse = np.interp(shoulder_value, [2, 12], [1000, 2000])
-                elbow_pulse = np.interp(elbow_value, [2, 12], [1000, 2000])
+                shoulder_pulse = np.interp(shoulder_value, [2, 12], [500, 2500])
+                elbow_pulse = np.interp(elbow_value, [2, 12], [500, 2500])
 
                 # Debug optional:
                 #print(f"Shoulder Pulse: {shoulder_pulse}µs, Elbow Pulse: {elbow_pulse}µs")

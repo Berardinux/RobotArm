@@ -46,7 +46,7 @@ def main():
             try:
                 # Example mapping: If base_value is in [2,12], map it to [1000,2000] µs pulse width
                 # Adjust the range as needed for your servo.
-                base_pulse = np.interp(base_value, [2, 12], [1000, 2000])
+                base_pulse = np.interp(base_value, [2, 12], [500, 2500])
                 
                 # Debugging print (optional):
                 #print(f"Base Pulse Width: {base_pulse} µs")
