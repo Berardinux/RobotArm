@@ -1,56 +1,49 @@
-import RPi.GPIO as GPIO
-from time import sleep
 import threading
+from time import sleep
+import pigpio
+import numpy as np
 from WristControl import get_wrist_value, exit_program
 from HandControl import get_hand_value  # Import hand control function
 
 # GPIO pins for the wrist and hand servos
 WRIST_PIN = 16
-HAND_PIN = 26  # Update this to the correct pin for your hand servo
+HAND_PIN = 26
 
-def initialize_wrist_servo():
-    """
-    Initialize the wrist servo by setting up the GPIO pin and starting PWM.
-    Assumes a standard servo frequency of 50 Hz.
-    """
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(WRIST_PIN, GPIO.OUT)
-    wrist_servo = GPIO.PWM(WRIST_PIN, 50)  # 50 Hz frequency
-    wrist_servo.start(0)
-    return wrist_servo
-
-def initialize_hand_servo():
-    """
-    Initialize the hand servo by setting up the GPIO pin and starting PWM.
-    Also assumes a standard servo frequency of 50 Hz.
-    """
-    GPIO.setmode(GPIO.BCM)  # Ensures BCM mode is set (redundant but safe)
-    GPIO.setup(HAND_PIN, GPIO.OUT)
-    hand_servo = GPIO.PWM(HAND_PIN, 50)
-    hand_servo.start(0)
-    return hand_servo
+# Connect to pigpio daemon
+pi = pigpio.pi()
+if not pi.connected:
+    print("Failed to connect to pigpio daemon.")
+    exit(1)
 
 def main():
     global exit_program
     exit_program = False
 
-    # Initialize both wrist and hand servos
-    wrist_servo = initialize_wrist_servo()
-    hand_servo = initialize_hand_servo()
-
     try:
         # Main loop to continuously update the servos based on input
         while not exit_program:
-            # Retrieve the current duty cycle values
-            wrist_value = get_wrist_value()  # e.g., [2,12]
-            hand_value = get_hand_value()    # e.g., [2,10.8] or as configured
+            # Retrieve the current duty cycle-like values (e.g., [2,12]) for wrist and hand
+            wrist_value = get_wrist_value()  # For example [2,12]
+            hand_value = get_hand_value()    # For example [2,10.8] or similar range
 
             # Debugging prints (optional)
-            print(f"Wrist Duty Cycle: {wrist_value:.2f}, Hand Duty Cycle: {hand_value:.2f}")
+            print(f"Wrist Duty Cycle-like: {wrist_value:.2f}, Hand Duty Cycle-like: {hand_value:.2f}")
 
-            # Update the servo duty cycles
-            wrist_servo.ChangeDutyCycle(wrist_value)
-            hand_servo.ChangeDutyCycle(hand_value)
+            # Map these duty-cycle-like values to pulse widths in microseconds.
+            # Adjust these mappings as needed for your specific servo travel range.
+            # Example: Map [2,12] to [1000,2000] µs, and [2,10.8] similarly.
+            
+            # For wrist:
+            wrist_pulse = np.interp(wrist_value, [2, 12], [1000, 2000])
+            # For hand:
+            hand_pulse = np.interp(hand_value, [2, 10.8], [1000, 2000])
+
+            # Debugging (optional):
+            #print(f"Wrist Pulse: {wrist_pulse}µs, Hand Pulse: {hand_pulse}µs")
+
+            # Set servo pulsewidths using pigpio
+            pi.set_servo_pulsewidth(WRIST_PIN, wrist_pulse)
+            pi.set_servo_pulsewidth(HAND_PIN, hand_pulse)
 
             sleep(0.05)
 
@@ -58,10 +51,10 @@ def main():
         print("Exiting program...")
         exit_program = True
     finally:
-        # Stop PWM signals and clean up GPIO
-        wrist_servo.stop()
-        hand_servo.stop()
-        GPIO.cleanup()
+        # Stop sending pulses to the servos by setting pulsewidth to 0
+        pi.set_servo_pulsewidth(WRIST_PIN, 0)
+        pi.set_servo_pulsewidth(HAND_PIN, 0)
+        pi.stop()  # Disconnect from pigpio
         print("Program exited.")
 
 if __name__ == "__main__":
