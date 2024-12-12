@@ -7,7 +7,7 @@ import numpy as np
 device = evdev.InputDevice('/dev/input/event4')  # Replace with your specific event file
 print(f"Device (Hand): {device.path}, Name: {device.name}, Phys: {device.phys}")
 
-HAND_RAW = 100  # Initial raw hand position (0-1000 range)
+HAND_RAW = 500  # Initial raw hand position (0-1000 range)
 exit_program = False
 
 openSpeed = 0   # Speed for opening the hand (decreasing HAND_RAW)
@@ -33,10 +33,10 @@ def monitor_events():
             if event.type == evdev.ecodes.EV_ABS:
                 if event.code == evdev.ecodes.ABS_GAS:
                     # Map trigger value [0,1023] to speed [0,10]
-                    openSpeed = round(map_value(event.value, 0, 1023, 0, 10))
+                    openSpeed = round(map_value(event.value, 0, 1023, 0, 50))
                     # If trigger is released (value=0), speed will be 0 as well
                 elif event.code == evdev.ecodes.ABS_BRAKE:
-                    closeSpeed = round(map_value(event.value, 0, 1023, 0, 10))
+                    closeSpeed = round(map_value(event.value, 0, 1023, 0, 50))
                     # If trigger is released (value=0), speed will be 0 as well
     except KeyboardInterrupt:
         exit_program = True
@@ -69,7 +69,7 @@ def get_hand_value():
     Adjust [2,10.8] as needed for your servo's specifications.
     """
     global HAND_RAW
-    return np.interp(HAND_RAW, [0, 1000], [2, 10.8])
+    return np.interp(HAND_RAW, [0, 1000], [500, 2500])
 
 # Start the event monitoring thread
 event_thread = threading.Thread(target=monitor_events, daemon=True)

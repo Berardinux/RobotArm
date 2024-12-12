@@ -60,7 +60,7 @@ def get_base_value():
     Adjust the output range [2, 12] as needed for your servo’s specifications.
     """
     global BASE_RAW
-    return np.interp(BASE_RAW, [0, 1000], [2, 12])
+    return np.interp(BASE_RAW, [0, 1000], [500, 2500])
 
 # Start threads to update base rotation and monitor events
 base_thread = threading.Thread(target=update_base_raw, daemon=True)

@@ -49,7 +49,7 @@ def monitor_events():
 def get_elbow_value():
     global ELBOW_RAW
     # Map [0,1000] → [2,10.8] for Elbow based on your servo range
-    return np.interp(ELBOW_RAW, [0, 1000], [2, 10.8])
+    return np.interp(ELBOW_RAW, [0, 1000], [500, 2500])
 
 # Start threads
 elbow_thread = threading.Thread(target=update_elbow_raw, daemon=True)

@@ -1,7 +1,7 @@
 import threading
 from time import sleep
 import pigpio
-import numpy as np
+#import numpy as np
 from Scaler_LeftAnalogStick_BaseRotation import get_base_value
 
 # Global variables
@@ -46,13 +46,13 @@ def main():
             try:
                 # Example mapping: If base_value is in [2,12], map it to [1000,2000] µs pulse width
                 # Adjust the range as needed for your servo.
-                base_pulse = np.interp(base_value, [2, 12], [500, 2500])
+                #base_pulse = np.interp(base_value, [2, 12], [500, 2500])
                 
                 # Debugging print (optional):
                 #print(f"Base Pulse Width: {base_pulse} µs")
 
                 # Set the servo pulse width using pigpio
-                pi.set_servo_pulsewidth(BASE_PIN, base_pulse)
+                pi.set_servo_pulsewidth(BASE_PIN, base_value)
 
             except ValueError as e:
                 print(f"Error updating servo pulse width: {e}")

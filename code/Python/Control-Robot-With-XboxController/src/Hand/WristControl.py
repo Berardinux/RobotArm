@@ -29,12 +29,12 @@ def monitor_events():
                 # event.value == 1 means button pressed, value == 0 means released
                 if event.code == evdev.ecodes.BTN_TR:  # Increase wrist angle
                     if event.value == 1:
-                        wrist_speed = +7  # Start rotating forward
+                        wrist_speed = +15  # Start rotating forward
                     elif event.value == 0:
                         wrist_speed = 0   # Stop rotating
                 elif event.code == evdev.ecodes.BTN_TL: # Decrease wrist angle
                     if event.value == 1:
-                        wrist_speed = -7  # Start rotating backward
+                        wrist_speed = -15  # Start rotating backward
                     elif event.value == 0:
                         wrist_speed = 0   # Stop rotating
     except KeyboardInterrupt:
@@ -59,7 +59,7 @@ def get_wrist_value():
     Adjust the output range [2,12] as needed for your servo’s specifications.
     """
     global WRIST_RAW
-    return np.interp(WRIST_RAW, [0, 1000], [2, 12])
+    return np.interp(WRIST_RAW, [0, 1000], [500, 2500])
 
 # Start the event monitoring thread
 event_thread = threading.Thread(target=monitor_events, daemon=True)

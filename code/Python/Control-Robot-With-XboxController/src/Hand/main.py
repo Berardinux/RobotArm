@@ -1,7 +1,7 @@
 import threading
 from time import sleep
 import pigpio
-import numpy as np
+#import numpy as np
 from WristControl import get_wrist_value, exit_program
 from HandControl import get_hand_value  # Import hand control function
 
@@ -34,16 +34,16 @@ def main():
             # Example: Map [2,12] to [1000,2000] µs, and [2,10.8] similarly.
             
             # For wrist:
-            wrist_pulse = np.interp(wrist_value, [2, 12], [500, 2500])
+            #wrist_pulse = np.interp(wrist_value, [2, 12], [500, 2500])
             # For hand:
-            hand_pulse = np.interp(hand_value, [2, 10.8], [500, 2500])
+            #hand_pulse = np.interp(hand_value, [2, 10.8], [500, 2500])
 
             # Debugging (optional):
             #print(f"Wrist Pulse: {wrist_pulse}µs, Hand Pulse: {hand_pulse}µs")
 
             # Set servo pulsewidths using pigpio
-            pi.set_servo_pulsewidth(WRIST_PIN, wrist_pulse)
-            pi.set_servo_pulsewidth(HAND_PIN, hand_pulse)
+            pi.set_servo_pulsewidth(WRIST_PIN, wrist_value)
+            pi.set_servo_pulsewidth(HAND_PIN, hand_value)
 
             sleep(0.05)
 

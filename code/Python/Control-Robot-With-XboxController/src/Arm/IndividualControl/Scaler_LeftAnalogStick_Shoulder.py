@@ -49,7 +49,7 @@ def monitor_events():
 def get_shoulder_value():
     global SHOULDER_RAW
     # Map [0,1000] → [2,8.5] for Shoulder based on your servo range
-    return np.interp(SHOULDER_RAW, [0, 1000], [2, 8.5])
+    return np.interp(SHOULDER_RAW, [0, 1000], [500, 2500])
 
 # Start threads
 shoulder_thread = threading.Thread(target=update_shoulder_raw, daemon=True)

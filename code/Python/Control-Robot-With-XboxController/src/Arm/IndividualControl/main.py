@@ -69,15 +69,15 @@ def main():
                 
                 # Example: Map [2,12] duty cycle to [1000,2000] µs pulse width
                 # Adjust as necessary based on your servo specifications.
-                shoulder_pulse = np.interp(shoulder_value, [2, 12], [500, 2500])
-                elbow_pulse = np.interp(elbow_value, [2, 12], [500, 2500])
+                #shoulder_pulse = np.interp(shoulder_value, [2, 12], [500, 2500])
+                #elbow_pulse = np.interp(elbow_value, [2, 12], [500, 2500])
 
                 # Debug optional:
                 #print(f"Shoulder Pulse: {shoulder_pulse}µs, Elbow Pulse: {elbow_pulse}µs")
 
                 # Set servo pulsewidths using pigpio
-                pi.set_servo_pulsewidth(SHOULDER_PIN, shoulder_pulse)
-                pi.set_servo_pulsewidth(ELBOW_PIN, elbow_pulse)
+                pi.set_servo_pulsewidth(SHOULDER_PIN, shoulder_value)
+                pi.set_servo_pulsewidth(ELBOW_PIN, elbow_value)
 
             except ValueError as e:
                 print(f"Error in servo update: {e}")
