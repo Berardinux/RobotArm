@@ -64,7 +64,6 @@ def main():
                 # Set servo pulsewidths using pigpio
                 pi.set_servo_pulsewidth(SHOULDER_PIN, shoulder_value)
                 pi.set_servo_pulsewidth(ELBOW_PIN, elbow_value)
-                return shoulder_value, elbow_value
 
             except ValueError as e:
                 print(f"Error in servo update: {e}")

@@ -28,7 +28,6 @@ def main():
         while not exit_program:
             x_val = get_x_value()
             y_val = get_y_value()
-            result = moveToPos(x_val, y_val)
             shoulder_angle, elbow_angle, shoulder_pwm, elbow_pwm = result
 
             out_of_range = (shoulder_angle is None or elbow_angle is None)
