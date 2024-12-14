@@ -17,27 +17,43 @@ if not pi.connected:
     exit(1)
 
 program_number = 0  # 0 = IndividualControl, 1 = InverseKinematicsControl
-home_shoulder_val = 566
-home_elbow_val = 2208
+home_shoulder_val = 566.0
+home_elbow_val = 2208.0
 
 def Ramp(old_shoulder, old_elbow, new_shoulder, new_elbow):
-    # Convert all values to integers for range
-    int_old_shoulder = int(old_shoulder)
-    int_new_shoulder = int(new_shoulder)
-    int_old_elbow = int(old_elbow)
-    int_new_elbow = int(new_elbow)
+    # Ensure values are floats
+    old_shoulder = float(old_shoulder)
+    old_elbow = float(old_elbow)
+    new_shoulder = float(new_shoulder)
+    new_elbow = float(new_elbow)
 
-    # Ramp shoulder
-    step = 1 if int_new_shoulder > int_old_shoulder else -1
-    for val in range(int_old_shoulder, int_new_shoulder, step):
-        pi.set_servo_pulsewidth(SHOULDER_PIN, val)
-        sleep(0.01)
+    # Smoothly ramp shoulder
+    if old_shoulder < new_shoulder:
+        i = old_shoulder
+        while i <= new_shoulder:
+            pi.set_servo_pulsewidth(SHOULDER_PIN, i)
+            i += 0.01
+            sleep(0.01)
+    else:
+        i = old_shoulder
+        while i >= new_shoulder:
+            pi.set_servo_pulsewidth(SHOULDER_PIN, i)
+            i -= 0.01
+            sleep(0.01)
 
-    # Ramp elbow
-    step = 1 if int_new_elbow > int_old_elbow else -1
-    for val in range(int_old_elbow, int_new_elbow, step):
-        pi.set_servo_pulsewidth(ELBOW_PIN, val)
-        sleep(0.01)
+    # Smoothly ramp elbow
+    if old_elbow < new_elbow:
+        j = old_elbow
+        while j <= new_elbow:
+            pi.set_servo_pulsewidth(ELBOW_PIN, j)
+            j += 0.01
+            sleep(0.01)
+    else:
+        j = old_elbow
+        while j >= new_elbow:
+            pi.set_servo_pulsewidth(ELBOW_PIN, j)
+            j -= 0.01
+            sleep(0.01)
 
 # Start with IndividualControl
 start_individual()
@@ -53,7 +69,7 @@ try:
                     old_shoulder, old_elbow = get_individual_positions()
                     print("Switching to InverseKinematicsControl...")
                     Ramp(old_shoulder, old_elbow, home_shoulder_val, home_elbow_val)
-                    stop_individual()
+                    stop_individual()  
                     start_ik()
                     program_number = 1
                 else:
