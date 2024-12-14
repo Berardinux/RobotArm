@@ -1,100 +1,66 @@
 import threading
+import pigpio
 from time import sleep
-import RPi.GPIO as GPIO
-from Scaler_LeftAnalogStick_XboxBoxController import get_z_value
-from Scaler_RightAnalogStick_XboxBoxController import get_y_value
-from InverseKinematics import moveToPos
-from ControlArm import convert_angles_to_pwm
+from X_Scaler import get_x_value, start_x_updates, set_x_locks
+from Y_Scaler import get_y_value, start_y_updates, set_y_locks
+from InverseKinematics import moveToPos, SHOULDER_LENGTH, ELBOW_LENGTH
 
-# Global variables for Z and Y values
-z_value = 500  # Initial Z-axis position
-y_value = 500  # Initial Y-axis position
-exit_program = False  # Flag to stop threads
-
-# Servo GPIO pins
 SHOULDER_PIN = 21
 ELBOW_PIN = 20
-
-def update_z():
-    global z_value, exit_program
-    while not exit_program:
-        try:
-            z_value = get_z_value()  # Fetch Z value (scaled)
-            print(f"Z Value: {z_value:.2f} mm")  # Debugging
-        except Exception as e:
-            print(f"Error fetching Z value: {e}")
-        sleep(0.05)
-
-def update_y():
-    global y_value, exit_program
-    while not exit_program:
-        try:
-            y_value = get_y_value()  # Fetch Y value (scaled)
-            print(f"Y Value: {y_value:.2f} mm")  # Debugging
-        except Exception as e:
-            print(f"Error fetching Y value: {e}")
-        sleep(0.05)
-
-def initialize_servos():
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(SHOULDER_PIN, GPIO.OUT)
-    GPIO.setup(ELBOW_PIN, GPIO.OUT)
-    shoulder_servo = GPIO.PWM(SHOULDER_PIN, 50)  # 50 Hz frequency
-    elbow_servo = GPIO.PWM(ELBOW_PIN, 50)        # 50 Hz frequency
-    shoulder_servo.start(0)
-    elbow_servo.start(0)
-    return shoulder_servo, elbow_servo
+exit_program = False
+pi = pigpio.pi()
 
 def main():
     global exit_program
 
-    # Initialize servos
-    shoulder_servo, elbow_servo = initialize_servos()
-
     try:
-        # Create threads to fetch Z and Y values
-        thread_z = threading.Thread(target=update_z, daemon=True)
-        thread_y = threading.Thread(target=update_y, daemon=True)
-        thread_z.start()
-        thread_y.start()
+        x_update_thread = threading.Thread(target=start_x_updates, daemon=True)
+        y_update_thread = threading.Thread(target=start_y_updates, daemon=True)
+        x_update_thread.start()
+        y_update_thread.start()
 
-        # Main loop to calculate angles and drive servos
+        max_reach = SHOULDER_LENGTH + ELBOW_LENGTH
+        old_shoulder_pwm = 1200
+        old_elbow_pwm = 1200
+
         while not exit_program:
-            try:
-                # Calculate angles from inverse kinematics
-                base_angle, arm1_angle, arm2_angle = moveToPos(0, y_value, z_value)
-                #print(f"Base: {base_angle:.2f}°, Shoulder: {arm1_angle:.2f}°, Elbow: {arm2_angle:.2f}°")
+            x_val = get_x_value()
+            y_val = get_y_value()
+            result = moveToPos(x_val, y_val)
+            shoulder_angle, elbow_angle, shoulder_pwm, elbow_pwm = result
 
-                # Convert shoulder and elbow angles to PWM signals
-                shoulder_pwm, elbow_pwm = convert_angles_to_pwm(arm1_angle, arm2_angle)
-                #print(f"Shoulder PWM: {shoulder_pwm:.2f}, Elbow PWM: {elbow_pwm:.2f}")
+            out_of_range = (shoulder_angle is None or elbow_angle is None)
+            radius = (x_val**2 + y_val**2)**0.5
 
-                # Note: If your servo expects duty cycles in a certain range (like 2%-12%),
-                # and the PWM values are not in that range, you may need to rescale them.
-                # For example, if shoulder_pwm and elbow_pwm are already in [1.7, 9.0] range,
-                # that might correspond directly to duty cycles for your servo.
-                # If needed, apply a mapping here:
-                # duty_cycle_shoulder = map_value(shoulder_pwm, MIN_PWM, MAX_PWM, 2, 12)
-                # duty_cycle_elbow = map_value(elbow_pwm, MIN_PWM, MAX_PWM, 2, 12)
+            if out_of_range and radius > max_reach:
+                x_lock_positive = (x_val > 0)
+                x_lock_negative = (x_val < 0)
+                y_lock_positive = (y_val > 0)
+                y_lock_negative = (y_val < 0)
+                set_x_locks(x_lock_positive, x_lock_negative)
+                set_y_locks(y_lock_positive, y_lock_negative)
+            else:
+                set_x_locks(False, False)
+                set_y_locks(False, False)
 
-                # For now, assume the PWM values from convert_angles_to_pwm are appropriate duty cycles:
-                shoulder_servo.ChangeDutyCycle(shoulder_pwm)
-                elbow_servo.ChangeDutyCycle(elbow_pwm)
+            if not out_of_range and shoulder_pwm is not None and elbow_pwm is not None:
+                pi.set_servo_pulsewidth(SHOULDER_PIN, shoulder_pwm)
+                pi.set_servo_pulsewidth(ELBOW_PIN, elbow_pwm)
+                print(f"(X: {x_val}, Y: {y_val}) // Shoulder angle: {shoulder_angle} // Elbow angle: {elbow_angle} // SPW {shoulder_pwm} // EPW {elbow_pwm}")
+                old_shoulder_pwm = shoulder_pwm
+                old_elbow_pwm = elbow_pwm
+            else:
+                pi.set_servo_pulsewidth(SHOULDER_PIN, old_shoulder_pwm)
+                pi.set_servo_pulsewidth(ELBOW_PIN, old_elbow_pwm)
+                print(f"(X: {x_val}, Y: {y_val}) // SPW {old_shoulder_pwm} // EPW {old_elbow_pwm} - Out of range, no valid servo command")
 
-            except ValueError as e:
-                print(f"Error in angle calculation: {e}")
-            sleep(0.05)
+            sleep(0.01)
 
     except KeyboardInterrupt:
         print("Exiting program...")
-        exit_program = True  # Signal threads to stop
+        exit_program = True
 
     finally:
-        thread_z.join()
-        thread_y.join()
-        shoulder_servo.stop()
-        elbow_servo.stop()
-        GPIO.cleanup()
         print("Program exited.")
 
 if __name__ == "__main__":

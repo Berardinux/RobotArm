@@ -1,53 +1,49 @@
 import math
+import numpy as np
 
-def moveToPos(x, y, z):
-    """
-    Calculate the angles for a robotic arm to move to the specified position.
+SHOULDER_LENGTH = 200
+ELBOW_LENGTH = 200
 
-    Parameters:
-    x (float): Target position in the X direction (always 0 here for simplicity).
-    y (float): Target position in the Y direction.
-    z (float): Target position in the Z direction.
+def moveToPos(x, y):
+    h1 = math.sqrt(x**2 + y**2)
 
-    Returns:
-    tuple: (base_angle, arm1_angle, arm2_angle)
-    """
-    ARM_LENGTH = 265  # Length of each arm segment in mm
-    MAX_REACH = 2 * ARM_LENGTH  # Maximum reach in mm
+    # Check for zero distance to avoid division by zero
+    if h1 == 0:
+        return None, None, None, None
 
-    # Calculate the target distance from the origin
-    distance = math.sqrt(y**2 + z**2)
+    # Check if the target is out of reach
+    if h1 > (SHOULDER_LENGTH + ELBOW_LENGTH):
+        return None, None, None, None
+    
+    θ1 = round(math.degrees(math.asin(y/h1)))
+    θ2 = math.degrees(math.acos((h1/2)/SHOULDER_LENGTH))
+    an1 = θ1 + θ2
 
-    if distance > MAX_REACH:
-        raise ValueError("Target position is beyond the arm's reach.")
+    θ3 = math.degrees(math.asin((h1/2)/SHOULDER_LENGTH))
+    θ4 = θ3 * 2
+    θ5 = 180 - θ4
+    an2 = (90 - θ5)
 
-    # Base rotation angle (simplified, assuming fixed X-axis position)
-    base_angle = math.atan2(y, z) * (180 / math.pi)
+    # Handle an1
+    if 0 <= an1 <= 180:
+        # Standard interpolation for range 0-180
+        spw = np.interp(an1, [0, 180], [1600, 440])
+    elif an1 < 0:
+        # Negative angle: convert to positive and adjust PWM accordingly
+        spw = ((-1 * an1) * 6.444) + 1600
+    else:
+        # an1 > 180
+        spw = None
 
-    # Compute elevation and bending angles
-    phi = math.atan2(z, y) * (180 / math.pi)
-    theta = math.acos(distance / (2 * ARM_LENGTH)) * (180 / math.pi)
+    # Handle an2
+    if 0 <= an2 <= 180:
+        # Standard interpolation for range 0-180
+        epw = np.interp(an2, [0, 180], [1880, 720])
+    elif an2 < 0:
+        # Negative angle: convert to positive and adjust PWM accordingly
+        epw = ((-1 * an2) * 6.444) + 1880
+    else:
+        # an2 > 180
+        epw = None
 
-    arm1_angle = phi + theta  # First arm segment angle
-    arm2_angle = phi - theta  # Second arm segment angle
-
-    return base_angle, arm1_angle, arm2_angle
-
-
-if __name__ == "__main__":
-    # Example usage: Test cases
-    test_cases = [
-        (0, 10, 10),   # Random valid position
-        (0, 50, 50),   # Position along the diagonal
-        (0, 100, 100), # Near the arm's max reach
-        (0, 150, 150), # Beyond arm's reach (will raise ValueError)
-        (0, -10, -10)  # Negative inputs for all dimensions
-    ]
-
-    for x, y, z in test_cases:
-        print(f"\nTesting with X: {x}, Y: {y}, Z: {z}")
-        try:
-            b, a1, a2 = moveToPos(x, y, z)
-            print(f"Calculated Angles - Base: {b:.2f}°, Shoulder: {a1:.2f}°, Elbow: {a2:.2f}°")
-        except ValueError as e:
-            print(f"Error: {e}")
+    return an1, an2, spw, epw
