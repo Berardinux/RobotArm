@@ -53,14 +53,14 @@ try:
                     old_shoulder, old_elbow = get_individual_positions()
                     print("Switching to InverseKinematicsControl...")
                     Ramp(old_shoulder, old_elbow, home_shoulder_val, home_elbow_val)
-                    stop_individual()  # Waits for the thread to join, ensures pi stopped
+                    stop_individual()
                     start_ik()
                     program_number = 1
                 else:
                     old_shoulder, old_elbow = get_ik_positions()
                     print("Switching to IndividualControl...")
                     Ramp(old_shoulder, old_elbow, home_shoulder_val, home_elbow_val)
-                    stop_ik()  # Waits for the thread to join, ensures pi stopped
+                    stop_ik()
                     start_individual()
                     program_number = 0
 

@@ -10,17 +10,17 @@ ELBOW_PIN = 20
 exit_program = False
 main_thread = None
 
-pi = pigpio.pi()
-if not pi.connected:
-    print("Failed to connect to pigpio daemon.")
-    exit(1)
-
-# Variables to track last known servo positions
 old_shoulder_pwm = 1200
 old_elbow_pwm = 1200
 
 def main():
     global exit_program, old_shoulder_pwm, old_elbow_pwm
+
+    # Initialize pigpio here (fresh each time main runs)
+    pi = pigpio.pi()
+    if not pi.connected:
+        print("Failed to connect to pigpio daemon.")
+        return
 
     try:
         x_update_thread = threading.Thread(target=start_x_updates, daemon=True)
@@ -70,13 +70,12 @@ def main():
     except KeyboardInterrupt:
         print("Exiting program...")
         exit_program = True
-
     finally:
-        # Stop updates
+        # Reset locks
         set_x_locks(False, False)
         set_y_locks(False, False)
 
-        # No need to join scaler threads if they are daemon threads
+        # Stop servos
         pi.set_servo_pulsewidth(SHOULDER_PIN, 0)
         pi.set_servo_pulsewidth(ELBOW_PIN, 0)
         pi.stop()
@@ -87,7 +86,8 @@ def get_positions():
     return old_shoulder_pwm, old_elbow_pwm
 
 def start():
-    global main_thread
+    global main_thread, exit_program
+    exit_program = False
     main_thread = threading.Thread(target=main, daemon=True)
     main_thread.start()
 
