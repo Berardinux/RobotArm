@@ -7,7 +7,7 @@ import numpy as np
 device = evdev.InputDevice('/dev/input/event4')  # Replace with your specific event file
 print(f"Device (Shoulder): {device.path}, Name: {device.name}, Phys: {device.phys}")
 
-SHOULDER_RAW = 226   # Initial shoulder raw position
+SHOULDER_RAW = 33   # Initial shoulder raw position
 current_value = 32768
 DEAD_ZONE = 1000
 exit_program = False

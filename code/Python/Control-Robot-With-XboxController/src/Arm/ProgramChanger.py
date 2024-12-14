@@ -17,8 +17,8 @@ if not pi.connected:
     exit(1)
 
 program_number = 0  # 0 = IndividualControl, 1 = InverseKinematicsControl
-home_shoulder_val = 1500
-home_elbow_val = 1500
+home_shoulder_val = 566
+home_elbow_val = 2208
 
 def Ramp(old_shoulder, old_elbow, new_shoulder, new_elbow):
     # Convert all values to int before using range()
