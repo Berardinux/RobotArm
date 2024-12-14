@@ -1,7 +1,6 @@
 import threading
 import pigpio
 from time import sleep
-# Use relative imports for local modules
 from .X_Scaler import get_x_value, start_x_updates, set_x_locks
 from .Y_Scaler import get_y_value, start_y_updates, set_y_locks
 from .InverseKinematics import moveToPos, SHOULDER_LENGTH, ELBOW_LENGTH
@@ -9,8 +8,14 @@ from .InverseKinematics import moveToPos, SHOULDER_LENGTH, ELBOW_LENGTH
 SHOULDER_PIN = 21
 ELBOW_PIN = 20
 exit_program = False
-pi = pigpio.pi()
+main_thread = None
 
+pi = pigpio.pi()
+if not pi.connected:
+    print("Failed to connect to pigpio daemon.")
+    exit(1)
+
+# Variables to track last known servo positions
 old_shoulder_pwm = 1200
 old_elbow_pwm = 1200
 
@@ -67,21 +72,28 @@ def main():
         exit_program = True
 
     finally:
+        # Stop updates
+        set_x_locks(False, False)
+        set_y_locks(False, False)
+
+        # No need to join scaler threads if they are daemon threads
         pi.set_servo_pulsewidth(SHOULDER_PIN, 0)
         pi.set_servo_pulsewidth(ELBOW_PIN, 0)
         pi.stop()
         print("Program exited.")
-
-if __name__ == "__main__":
-    main()
 
 def get_positions():
     global old_shoulder_pwm, old_elbow_pwm
     return old_shoulder_pwm, old_elbow_pwm
 
 def start():
-    threading.Thread(target=main, daemon=True).start()
+    global main_thread
+    main_thread = threading.Thread(target=main, daemon=True)
+    main_thread.start()
 
 def stop():
-    global exit_program
+    global exit_program, main_thread
     exit_program = True
+    if main_thread is not None:
+        main_thread.join()
+        main_thread = None

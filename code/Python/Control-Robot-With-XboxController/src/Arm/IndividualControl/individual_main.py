@@ -6,9 +6,10 @@ from .Scaler_LeftAnalogStick_Shoulder import get_shoulder_value
 from .Scaler_RightAnalogStick_Elbow import get_elbow_value
 
 # Global variables
-shoulder_value = 150   # Initial shoulder position (e.g. raw value)
-elbow_value = 980      # Initial elbow position (e.g. raw value)
+shoulder_value = 33   # Initial shoulder position
+elbow_value = 880      # Initial elbow position
 exit_program = False   # Flag to stop threads
+main_thread = None     # Will hold the Thread running main()
 
 # Servo GPIO pins
 SHOULDER_PIN = 21
@@ -44,14 +45,12 @@ def main():
     global exit_program
     exit_program = False
 
-    # Start threads to update shoulder and elbow values
     thread_shoulder = threading.Thread(target=update_shoulder, daemon=True)
     thread_elbow = threading.Thread(target=update_elbow, daemon=True)
     thread_shoulder.start()
     thread_elbow.start()
 
     try:
-        # Main loop to continuously update servos
         while not exit_program:
             try:
                 pi.set_servo_pulsewidth(SHOULDER_PIN, shoulder_value)
@@ -65,27 +64,28 @@ def main():
         exit_program = True
 
     finally:
+        # Wait for the threads to finish
+        thread_shoulder.join()
+        thread_elbow.join()
+
         # Stop sending pulses to the servos
         pi.set_servo_pulsewidth(SHOULDER_PIN, 0)
         pi.set_servo_pulsewidth(ELBOW_PIN, 0)
-        thread_shoulder.join()
-        thread_elbow.join()
         pi.stop()  # Disconnect from pigpio
         print("Program exited.")
 
-if __name__ == "__main__":
-    main()
-
-# Functions for ProgramChanger.py
 def get_positions():
-    # Return current known servo positions
     global shoulder_value, elbow_value
     return shoulder_value, elbow_value
 
 def start():
-    # Start main in a new thread so it doesn't block
-    threading.Thread(target=main, daemon=True).start()
+    global main_thread
+    main_thread = threading.Thread(target=main, daemon=True)
+    main_thread.start()
 
 def stop():
-    global exit_program
+    global exit_program, main_thread
     exit_program = True
+    if main_thread is not None:
+        main_thread.join()
+        main_thread = None

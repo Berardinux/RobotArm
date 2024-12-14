@@ -21,7 +21,7 @@ home_shoulder_val = 566
 home_elbow_val = 2208
 
 def Ramp(old_shoulder, old_elbow, new_shoulder, new_elbow):
-    # Convert all values to int before using range()
+    # Convert all values to integers for range
     int_old_shoulder = int(old_shoulder)
     int_new_shoulder = int(new_shoulder)
     int_old_elbow = int(old_elbow)
@@ -49,19 +49,18 @@ try:
     for event in device.read_loop():
         if event.type == evdev.ecodes.EV_KEY and event.code == BTN_MODE_CODE:
             if event.value == 1:  # Button pressed
-                # Get current positions from the active program
                 if program_number == 0:
                     old_shoulder, old_elbow = get_individual_positions()
                     print("Switching to InverseKinematicsControl...")
                     Ramp(old_shoulder, old_elbow, home_shoulder_val, home_elbow_val)
-                    stop_individual()
+                    stop_individual()  # Waits for the thread to join, ensures pi stopped
                     start_ik()
                     program_number = 1
                 else:
                     old_shoulder, old_elbow = get_ik_positions()
                     print("Switching to IndividualControl...")
                     Ramp(old_shoulder, old_elbow, home_shoulder_val, home_elbow_val)
-                    stop_ik()
+                    stop_ik()  # Waits for the thread to join, ensures pi stopped
                     start_individual()
                     program_number = 0
 
@@ -75,7 +74,6 @@ except PermissionError:
 except KeyboardInterrupt:
     print("Exiting program...")
 finally:
-    # Stop whichever program is running
     if program_number == 0:
         stop_individual()
     else:
