@@ -7,7 +7,7 @@ import numpy as np
 device = evdev.InputDevice('/dev/input/event4')  # Replace with your specific event file
 print(f"Device (Elbow): {device.path}, Name: {device.name}, Phys: {device.phys}")
 
-ELBOW_RAW = 980
+ELBOW_RAW = 883
 current_value = 32768
 DEAD_ZONE = 1000
 exit_program = False
