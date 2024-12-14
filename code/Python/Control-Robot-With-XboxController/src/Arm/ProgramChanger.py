@@ -21,14 +21,21 @@ home_shoulder_val = 1500
 home_elbow_val = 1500
 
 def Ramp(old_shoulder, old_elbow, new_shoulder, new_elbow):
+    # Convert all values to int before using range()
+    int_old_shoulder = int(old_shoulder)
+    int_new_shoulder = int(new_shoulder)
+    int_old_elbow = int(old_elbow)
+    int_new_elbow = int(new_elbow)
+
     # Ramp shoulder
-    step = 1 if new_shoulder > old_shoulder else -1
-    for val in range(old_shoulder, new_shoulder, step):
+    step = 1 if int_new_shoulder > int_old_shoulder else -1
+    for val in range(int_old_shoulder, int_new_shoulder, step):
         pi.set_servo_pulsewidth(SHOULDER_PIN, val)
         sleep(0.01)
+
     # Ramp elbow
-    step = 1 if new_elbow > old_elbow else -1
-    for val in range(old_elbow, new_elbow, step):
+    step = 1 if int_new_elbow > int_old_elbow else -1
+    for val in range(int_old_elbow, int_new_elbow, step):
         pi.set_servo_pulsewidth(ELBOW_PIN, val)
         sleep(0.01)
 
