@@ -36,8 +36,6 @@ def update_elbow():
     while not exit_program:
         try:
             elbow_value = get_elbow_value()  
-            # Debugging is optional:
-            #print(f"Elbow Value: {elbow_value:.2f}")
         except Exception as e:
             print(f"Error fetching elbow value: {e}")
         sleep(0.05)
@@ -63,21 +61,10 @@ def main():
         # Main loop to drive servos
         while not exit_program:
             try:
-                # Currently, shoulder_value and elbow_value are duty-cycle-like values in [2,12] range (?)
-                # If they are directly from the scaler scripts as PWM duty cycles for RPi.GPIO,
-                # you need to map them to pulse widths:
-                
-                # Example: Map [2,12] duty cycle to [1000,2000] µs pulse width
-                # Adjust as necessary based on your servo specifications.
-                #shoulder_pulse = np.interp(shoulder_value, [2, 12], [500, 2500])
-                #elbow_pulse = np.interp(elbow_value, [2, 12], [500, 2500])
-
-                # Debug optional:
-                #print(f"Shoulder Pulse: {shoulder_pulse}µs, Elbow Pulse: {elbow_pulse}µs")
-
                 # Set servo pulsewidths using pigpio
                 pi.set_servo_pulsewidth(SHOULDER_PIN, shoulder_value)
                 pi.set_servo_pulsewidth(ELBOW_PIN, elbow_value)
+                return shoulder_value, elbow_value
 
             except ValueError as e:
                 print(f"Error in servo update: {e}")
@@ -98,3 +85,17 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# Added functions to interface with ProgramChanger.py
+def get_positions():
+    # Return the current known servo positions
+    global shoulder_value, elbow_value
+    return shoulder_value, elbow_value
+
+def start():
+    # Start main in a new thread so it doesn't block
+    threading.Thread(target=main, daemon=True).start()
+
+def stop():
+    global exit_program
+    exit_program = True

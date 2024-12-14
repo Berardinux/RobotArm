@@ -10,8 +10,12 @@ ELBOW_PIN = 20
 exit_program = False
 pi = pigpio.pi()
 
+# These variables will hold the most recent servo positions applied
+old_shoulder_pwm = 1200
+old_elbow_pwm = 1200
+
 def main():
-    global exit_program
+    global exit_program, old_shoulder_pwm, old_elbow_pwm
 
     try:
         x_update_thread = threading.Thread(target=start_x_updates, daemon=True)
@@ -20,8 +24,6 @@ def main():
         y_update_thread.start()
 
         max_reach = SHOULDER_LENGTH + ELBOW_LENGTH
-        old_shoulder_pwm = 1200
-        old_elbow_pwm = 1200
 
         while not exit_program:
             x_val = get_x_value()
@@ -54,6 +56,8 @@ def main():
                 pi.set_servo_pulsewidth(ELBOW_PIN, old_elbow_pwm)
                 print(f"(X: {x_val}, Y: {y_val}) // SPW {old_shoulder_pwm} // EPW {old_elbow_pwm} - Out of range, no valid servo command")
 
+            return shoulder_pwm, elbow_pwm
+
             sleep(0.01)
 
     except KeyboardInterrupt:
@@ -65,3 +69,17 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# Added functions to interface with ProgramChanger.py
+def get_positions():
+    # Return the last known servo positions (stored in old_shoulder_pwm and old_elbow_pwm)
+    global old_shoulder_pwm, old_elbow_pwm
+    return old_shoulder_pwm, old_elbow_pwm
+
+def start():
+    # Start main in a new thread so it doesn't block
+    threading.Thread(target=main, daemon=True).start()
+
+def stop():
+    global exit_program
+    exit_program = True
