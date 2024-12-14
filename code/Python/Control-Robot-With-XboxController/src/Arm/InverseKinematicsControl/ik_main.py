@@ -1,16 +1,16 @@
 import threading
 import pigpio
 from time import sleep
-from X_Scaler import get_x_value, start_x_updates, set_x_locks
-from Y_Scaler import get_y_value, start_y_updates, set_y_locks
-from InverseKinematics import moveToPos, SHOULDER_LENGTH, ELBOW_LENGTH
+# Use relative imports for local modules
+from .X_Scaler import get_x_value, start_x_updates, set_x_locks
+from .Y_Scaler import get_y_value, start_y_updates, set_y_locks
+from .InverseKinematics import moveToPos, SHOULDER_LENGTH, ELBOW_LENGTH
 
 SHOULDER_PIN = 21
 ELBOW_PIN = 20
 exit_program = False
 pi = pigpio.pi()
 
-# These variables hold the most recent servo positions applied
 old_shoulder_pwm = 1200
 old_elbow_pwm = 1200
 
@@ -75,14 +75,11 @@ def main():
 if __name__ == "__main__":
     main()
 
-# Functions for ProgramChanger.py
 def get_positions():
-    # Return the last known servo positions
     global old_shoulder_pwm, old_elbow_pwm
     return old_shoulder_pwm, old_elbow_pwm
 
 def start():
-    # Start main in a new thread so it doesn't block
     threading.Thread(target=main, daemon=True).start()
 
 def stop():
