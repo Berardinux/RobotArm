@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 import evdev
-import subprocess
-from time import sleep
 import pigpio
+from time import sleep
 
 from IndividualControl.individual_main import start as start_individual, stop as stop_individual, get_positions as get_individual_positions
 from InverseKinematicsControl.ik_main import start as start_ik, stop as stop_ik, get_positions as get_ik_positions
@@ -11,6 +10,7 @@ DEVICE_PATH = "/dev/input/event4"
 BTN_MODE_CODE = 316  # main Xbox button code
 SHOULDER_PIN = 21
 ELBOW_PIN = 20
+
 pi = pigpio.pi()
 if not pi.connected:
     print("Failed to connect to pigpio daemon.")
@@ -32,7 +32,7 @@ def Ramp(old_shoulder, old_elbow, new_shoulder, new_elbow):
         pi.set_servo_pulsewidth(ELBOW_PIN, val)
         sleep(0.01)
 
-# Start the initial program
+# Start with IndividualControl
 start_individual()
 
 try:
@@ -46,7 +46,6 @@ try:
                 if program_number == 0:
                     old_shoulder, old_elbow = get_individual_positions()
                     print("Switching to InverseKinematicsControl...")
-                    # Ramp to home
                     Ramp(old_shoulder, old_elbow, home_shoulder_val, home_elbow_val)
                     stop_individual()
                     start_ik()
@@ -54,7 +53,6 @@ try:
                 else:
                     old_shoulder, old_elbow = get_ik_positions()
                     print("Switching to IndividualControl...")
-                    # Ramp to home
                     Ramp(old_shoulder, old_elbow, home_shoulder_val, home_elbow_val)
                     stop_ik()
                     start_individual()

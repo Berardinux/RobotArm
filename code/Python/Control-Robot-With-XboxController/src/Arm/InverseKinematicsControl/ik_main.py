@@ -10,7 +10,7 @@ ELBOW_PIN = 20
 exit_program = False
 pi = pigpio.pi()
 
-# These variables will hold the most recent servo positions applied
+# These variables hold the most recent servo positions applied
 old_shoulder_pwm = 1200
 old_elbow_pwm = 1200
 
@@ -28,7 +28,12 @@ def main():
         while not exit_program:
             x_val = get_x_value()
             y_val = get_y_value()
-            shoulder_angle, elbow_angle, shoulder_pwm, elbow_pwm = result
+
+            result = moveToPos(x_val, y_val)
+            if result is None:
+                shoulder_angle, elbow_angle, shoulder_pwm, elbow_pwm = None, None, None, None
+            else:
+                shoulder_angle, elbow_angle, shoulder_pwm, elbow_pwm = result
 
             out_of_range = (shoulder_angle is None or elbow_angle is None)
             radius = (x_val**2 + y_val**2)**0.5
@@ -55,8 +60,6 @@ def main():
                 pi.set_servo_pulsewidth(ELBOW_PIN, old_elbow_pwm)
                 print(f"(X: {x_val}, Y: {y_val}) // SPW {old_shoulder_pwm} // EPW {old_elbow_pwm} - Out of range, no valid servo command")
 
-            return shoulder_pwm, elbow_pwm
-
             sleep(0.01)
 
     except KeyboardInterrupt:
@@ -64,14 +67,17 @@ def main():
         exit_program = True
 
     finally:
+        pi.set_servo_pulsewidth(SHOULDER_PIN, 0)
+        pi.set_servo_pulsewidth(ELBOW_PIN, 0)
+        pi.stop()
         print("Program exited.")
 
 if __name__ == "__main__":
     main()
 
-# Added functions to interface with ProgramChanger.py
+# Functions for ProgramChanger.py
 def get_positions():
-    # Return the last known servo positions (stored in old_shoulder_pwm and old_elbow_pwm)
+    # Return the last known servo positions
     global old_shoulder_pwm, old_elbow_pwm
     return old_shoulder_pwm, old_elbow_pwm
 
