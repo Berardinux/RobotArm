@@ -2,8 +2,8 @@ import threading
 from time import sleep
 import pigpio
 import numpy as np
-from Scaler_LeftAnalogStick_Shoulder import get_shoulder_value
-from Scaler_RightAnalogStick_Elbow import get_elbow_value
+from .Scaler_LeftAnalogStick_Shoulder import get_shoulder_value
+from .Scaler_RightAnalogStick_Elbow import get_elbow_value
 
 # Global variables
 shoulder_value = 150   # Initial shoulder position (e.g. raw value)
