@@ -32,13 +32,13 @@ def Ramp(old_shoulder, old_elbow, new_shoulder, new_elbow):
         i = old_shoulder
         while i <= new_shoulder:
             pi.set_servo_pulsewidth(SHOULDER_PIN, i)
-            i += 0.01
+            i += 1
             sleep(0.01)
     else:
         i = old_shoulder
         while i >= new_shoulder:
             pi.set_servo_pulsewidth(SHOULDER_PIN, i)
-            i -= 0.01
+            i -= 1
             sleep(0.01)
 
     # Smoothly ramp elbow
@@ -46,13 +46,13 @@ def Ramp(old_shoulder, old_elbow, new_shoulder, new_elbow):
         j = old_elbow
         while j <= new_elbow:
             pi.set_servo_pulsewidth(ELBOW_PIN, j)
-            j += 0.01
+            j += 1
             sleep(0.01)
     else:
         j = old_elbow
         while j >= new_elbow:
             pi.set_servo_pulsewidth(ELBOW_PIN, j)
-            j -= 0.01
+            j -= 1
             sleep(0.01)
 
 # Start with IndividualControl

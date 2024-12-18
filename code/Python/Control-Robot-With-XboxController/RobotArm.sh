@@ -1,5 +1,7 @@
 #!/bin/bash
 
+pigpiod
+
 # Cleanup function to kill Python scripts and exit
 cleanup() {
     echo "Ctrl-C pressed. Stopping Python scripts..."
