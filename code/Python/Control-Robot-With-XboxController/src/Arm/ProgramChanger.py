@@ -7,7 +7,7 @@ from IndividualControl.individual_main import start as start_individual, stop as
 from InverseKinematicsControl.ik_main import start as start_ik, stop as stop_ik, get_positions as get_ik_positions
 
 DEVICE_PATH = "/dev/input/event4"
-BTN_MODE_CODE = 316  # main Xbox button code
+BTN_MODE_CODE = 304  # main Xbox button code
 SHOULDER_PIN = 21
 ELBOW_PIN = 20
 

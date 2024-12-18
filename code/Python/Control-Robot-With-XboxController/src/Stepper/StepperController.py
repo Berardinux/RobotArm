@@ -67,7 +67,7 @@ try:
                 if absevent.event.value == LEFT and not moving:
                     if GPIO.input(DIR1) == GPIO.LOW:
                         print("D-pad left pressed")
-                        GPIO.output(DIR, GPIO.LOW)
+                        GPIO.output(DIR, GPIO.HIGH)
                         pwm.ChangeDutyCycle(50)
                         moving = True
                         direction = LEFT
@@ -75,7 +75,7 @@ try:
                 elif absevent.event.value == RIGHT and not moving:
                     if GPIO.input(DIR0) == GPIO.LOW:
                         print("D-pad right pressed")
-                        GPIO.output(DIR, GPIO.HIGH)
+                        GPIO.output(DIR, GPIO.LOW)
                         pwm.ChangeDutyCycle(50)
                         moving = True
                         direction = RIGHT
