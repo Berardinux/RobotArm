@@ -16,7 +16,7 @@ sudo evtest /dev/input/event0
 sudo nano /etc/udev/rules.d/60-RobotArm.rules {
 
 
-SUBSYSTEM=="input", ATTRS{address}=="EC:83:50:5E:E2:8E", ACTION=="add", RUN+="/bin/systemctl start RobotArm.service"
+SUBSYSTEM=="input", ATTRS{name}=="Xbox Wireless Controller", ATTRS{uniq}=="ec:83:50:5e:e2:8e", ACTION=="add", RUN+="/bin/systemctl start RobotArm.service"
 
 }
 
@@ -41,4 +41,4 @@ WantedBy=multi-user.target
 
 sudo systemctl daemon-reload
 
-sudo systemctl status blackbriar-monitor.service
+sudo systemctl status RobotArm.service
